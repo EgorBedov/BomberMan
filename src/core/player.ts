@@ -1,5 +1,5 @@
 import {DATA, moveFunc, moveFuncArgs, POS} from 'Interfaces';
-import {BOMB_ID, BOMB_ON_PLAYER_ID, FIRE_ID, PLAYER_ID} from 'Constants';
+import {BOMB_ID, BOMB_ON_PLAYER_ID, BRICK_ID, FIRE_ID, PLAYER_ID} from 'Constants';
 import SV from 'Core/supervisor';
 
 type PowerType = number;
@@ -50,7 +50,7 @@ export default class Player {
         case 'right':   col++;   break;
         }
 
-        if (SV.canPlace(PLAYER_ID, row, col, this.data) && this.data[row][col] !== BOMB_ID) this.pos = {row: row, col: col};
+        if (SV.canPlace(PLAYER_ID, {row, col}, this.data) && this.data[row][col] !== BOMB_ID) this.pos = {row: row, col: col};
         this.setSelf();
     }
 
@@ -66,22 +66,27 @@ export default class Player {
     private startBoom(pos: POS, power: PowerType): void {
         const fire: FireArea = [];
         this.data[pos.row][pos.col] = FIRE_ID;
-        for (let iii = 1; iii < power + 1; iii++) {
-            this.placeFire(pos.row+iii, pos.col, fire);
-            this.placeFire(pos.row-iii, pos.col, fire);
-            this.placeFire(pos.row, pos.col+iii, fire);
-            this.placeFire(pos.row, pos.col-iii, fire);
+
+        for (let iii = 0; iii < 4; iii++) {
+            for (let jjj = 1; jjj < power + 1; jjj++) {
+                const tmp_pos = {...pos};
+                switch (iii) {
+                case 0:     tmp_pos.row += jjj;     break;
+                case 1:     tmp_pos.row -= jjj;     break;
+                case 2:     tmp_pos.col += jjj;     break;
+                case 3:     tmp_pos.col -= jjj;     break;
+                }
+
+                if (!SV.canPlace(FIRE_ID, tmp_pos, this.data)) break;
+                fire.push({...tmp_pos});
+                if (this.data[tmp_pos.row][tmp_pos.col] === BRICK_ID) break;
+            }
         }
+
+        fire.forEach((fire_pos) => this.data[fire_pos.row][fire_pos.col] = FIRE_ID);
         this.rerender();
 
         setTimeout(() => {this.endBoom(pos, fire);}, 2000);
-    }
-
-    private placeFire(row: number, col: number, fire: FireArea): void {
-        if (SV.canPlace(FIRE_ID, row, col, this.data)) {
-            this.data[row][col] = FIRE_ID;
-            fire.push({row: row, col: col});
-        }
     }
 
     private endBoom(pos: POS, fire: FireArea): void {

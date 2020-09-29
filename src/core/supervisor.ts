@@ -1,5 +1,5 @@
 import Designer from 'Core/designer';
-import {DATA, moveFuncArgs} from 'Interfaces';
+import {DATA, moveFuncArgs, POS} from 'Interfaces';
 import {getMatrix, isNumberInRange} from 'Utils/utils';
 import Player from 'Core/player';
 import {BOMB_ID, BRICK_ID, FIRE_ID, HEIGHT, PLAYER_ID, STATIC_MAP, WALL_ID, WIDTH} from 'Constants';
@@ -37,15 +37,16 @@ class SV {
         this.data = STATIC_MAP;
     }
 
-    public static canPlace(what: number, row: number, col: number, data: DATA): boolean {
+    public static canPlace(what: number, pos: POS, data: DATA): boolean {
         let arr: Array<number>;
         switch (what) {
-        case PLAYER_ID: arr = [WALL_ID, BRICK_ID, BOMB_ID];  break;
-        case FIRE_ID:   arr = [WALL_ID];            break;
+        case PLAYER_ID: arr = [WALL_ID, BRICK_ID, BOMB_ID];     break;
+        case FIRE_ID:   arr = [WALL_ID];                        break;
         }
-        return isNumberInRange(row, 0, HEIGHT-1)
-            && isNumberInRange(col, 0, WIDTH-1)
-            && !arr.includes(data[row][col]);
+
+        return isNumberInRange(pos.row, 0, HEIGHT-1)
+            && isNumberInRange(pos.col, 0, WIDTH-1)
+            && !arr.includes(data[pos.row][pos.col]);
     }
 }
 
