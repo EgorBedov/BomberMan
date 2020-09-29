@@ -4,12 +4,14 @@ import {DATA} from 'Interfaces';
 type IProps = {
     onBtnClick: () => void,
     onKeyPress: (ev: KeyboardEvent) => void,
+    onPlayersBtnClick: () => void,
 };
 
 class Designer {
     private table: HTMLTableElement;
     private props: IProps;
     private button: HTMLButtonElement;
+    private playersButtons: HTMLButtonElement;
 
     constructor(data: DATA, props: IProps) {
         this.table = null;
@@ -20,12 +22,15 @@ class Designer {
 
     public init(): void {
         const app = document.querySelector('#application');
-        this.button = app.insertAdjacentElement('afterbegin', Designer.createButton()) as HTMLButtonElement;
-        this.button.addEventListener('click', this.handleButtonClick.bind(this));
+        this.button = app.querySelector('.button_start');
+        this.button.addEventListener('click', this.handleStartButtonClick.bind(this));
+
+        this.playersButtons = app.querySelector('.button_players');
+        this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this))
 
         this.table = app.insertAdjacentElement('beforeend', Designer.createTable()) as HTMLTableElement;
         document.body.addEventListener('keydown', this.props.onKeyPress);
-        document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleButtonClick.call(this))
+        document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this))
     }
 
     private static createTable(): HTMLTableElement {
@@ -43,17 +48,25 @@ class Designer {
 
     private static createButton(): HTMLElement {
         const elem = document.createElement('button');
-        elem.className = 'button button_start';
-        elem.innerText = TEXT.BEGIN;
+        elem.className = 'button';
         return elem;
     }
 
-    private handleButtonClick(): void {
-        this.toggleButtonStyle();
+    private handleStartButtonClick(): void {
+        this.toggleStartButtonStyle();
         this.props.onBtnClick();
     }
 
-    public toggleButtonStyle(): void {
+    private handlePlayersButtonClick(): void {
+        this.playersButtons.blur();
+        this.props.onPlayersBtnClick();
+    }
+
+    public togglePlayersButtonStyle() : void {
+        this.playersButtons.innerText = this.playersButtons.innerText === '1' ? '2' : '1';
+    }
+
+    public toggleStartButtonStyle(): void {
         this.button.blur();
         if (this.button.innerText === TEXT.BEGIN) {
             this.button.innerText = TEXT.END;

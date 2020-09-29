@@ -12,6 +12,7 @@ body {
 #application {
   min-height: 100vh;
   min-width: 100vw;
+  background: #181a1b;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -39,6 +40,28 @@ body {
   &_5 { background-image: url('~Static/icons/fire.svg'); }
   &_6 { background-image: url('~Static/icons/js+react.svg'); }
   &_7 { background-image: url('~Static/icons/js+fire.svg'); }
+  &_8 { background: red; }
+  &_9 { background-image: url('~Static/icons/ts.svg'); }
+  &_10 { background-image: url('~Static/icons/ts+redux.svg'); }
+  &_11 { background-image: url('~Static/icons/ts+fire.svg'); }
+  &_12 { background-image: url('~Static/icons/redux.svg'); }
+}
+
+.menu {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  &__item {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+
+    p {
+      font-size: 14px;
+    }
+  }
 }
 
 .button {
@@ -47,5 +70,9 @@ body {
 
   &_start {
     background: chartreuse;
+  }
+
+  &_players {
+    background: coral;
   }
 }

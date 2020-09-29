@@ -1,12 +1,21 @@
 import {DATA, moveFuncArgs, POS} from 'Interfaces';
-import {BOMB_ID, BOMB_ON_PLAYER_ID, BRICK_ID, FIRE_ID, FIRE_ON_PLAYER_ID, PLAYER_ID} from 'Constants';
+import {
+    BOMB_ID, BOMB_ID_2,
+    BOMB_ON_PLAYER_ID, BOMB_ON_SECOND_PLAYER_ID,
+    BRICK_ID,
+    FIRE_ID,
+    FIRE_ON_PLAYER_ID,
+    FIRE_ON_SECOND_PLAYER_ID, HEIGHT,
+    PLAYER_ID,
+    SECOND_PLAYER_ID, WIDTH
+} from 'Constants';
 import SV from 'Core/supervisor';
 
 type PowerType = number;
 type FireArea = Array<POS>;
 type IProps = {
     rerender:() => void,
-    loseGame:() => void,
+    loseGame:(id: number) => void,
 }
 
 export default class Player {
@@ -15,10 +24,20 @@ export default class Player {
     private bombsLeft: number;
     private power: PowerType;
     private props: IProps;
+    private id: number;
+    private icon_id: number;
+    private fire_icon_id: number;
+    private bomb_icod_id: number;
+    private bomb_id: number;
 
-    constructor(data: DATA, props: IProps) {
+    constructor(id: number, data: DATA, props: IProps) {
+        this.id = id;
+        this.icon_id = this.id === 1 ? PLAYER_ID : SECOND_PLAYER_ID;
+        this.bomb_id = this.id === 1 ? BOMB_ID : BOMB_ID_2;
+        this.fire_icon_id = this.id === 1 ? FIRE_ON_PLAYER_ID : FIRE_ON_SECOND_PLAYER_ID;
+        this.bomb_icod_id = this.id === 1 ? BOMB_ON_PLAYER_ID : BOMB_ON_SECOND_PLAYER_ID;
         this.data = data;
-        this.pos = {row: 0, col: 0};
+        this.pos = this.id === 1 ? {row: 0, col: 0} : {row: HEIGHT-1, col: WIDTH-1};
         this.bombsLeft = 1;
         this.power = 2;
         this.props = props;
@@ -27,16 +46,16 @@ export default class Player {
     }
 
     private setSelf(): void {
-        if (this.data[this.pos.row][this.pos.col] === BOMB_ID) {
-            this.data[this.pos.row][this.pos.col] = BOMB_ON_PLAYER_ID;
+        if (this.data[this.pos.row][this.pos.col] === this.bomb_id) {
+            this.data[this.pos.row][this.pos.col] = this.bomb_icod_id;
         } else {
-            this.data[this.pos.row][this.pos.col] = PLAYER_ID;
+            this.data[this.pos.row][this.pos.col] = this.icon_id;
         }
     }
 
     private clearPlace(): void {
-        if (this.data[this.pos.row][this.pos.col] === BOMB_ON_PLAYER_ID) {
-            this.data[this.pos.row][this.pos.col] = BOMB_ID;
+        if (this.data[this.pos.row][this.pos.col] === this.bomb_icod_id) {
+            this.data[this.pos.row][this.pos.col] = this.bomb_id;
         } else {
             this.data[this.pos.row][this.pos.col] = 0;
         }
@@ -52,11 +71,16 @@ export default class Player {
         case 'right':   col++;   break;
         }
 
-        if (SV.canPlace(PLAYER_ID, {row, col}, this.data)) this.pos = {row, col};
+        if (SV.canPlace(this.icon_id, {row, col}, this.data)) {
+            this.pos = {row, col};
+        } else {
+            this.setSelf();
+            return;
+        }
         if (this.data[row][col] === FIRE_ID) {
-            this.data[row][col] = FIRE_ON_PLAYER_ID;
+            this.data[row][col] = this.fire_icon_id;
             this.props.rerender();
-            this.props.loseGame();
+            this.props.loseGame(this.id);
             return;
         }
         this.setSelf();
@@ -64,7 +88,7 @@ export default class Player {
 
     public plantBomb(): void {
         if (this.bombsLeft > 0) {
-            this.data[this.pos.row][this.pos.col] = BOMB_ON_PLAYER_ID;
+            this.data[this.pos.row][this.pos.col] = this.bomb_icod_id;
             this.props.rerender();
             const pos = {...this.pos};
             setTimeout(() => {this.startBoom(pos, this.power, this.pos);}, 2000);
@@ -90,18 +114,21 @@ export default class Player {
             }
         }
 
-        let end = false;
+        let end = 0;
         fire.forEach((fire_pos) => {
-            if (fire_pos.row === curr_pos.row && fire_pos.col === curr_pos.col) {
-                end = true;
+            if (this.data[fire_pos.row][fire_pos.col] === PLAYER_ID) {
+                end = PLAYER_ID;
                 this.data[fire_pos.row][fire_pos.col] = FIRE_ON_PLAYER_ID;
+            } else if (this.data[fire_pos.row][fire_pos.col] === SECOND_PLAYER_ID) {
+                end = SECOND_PLAYER_ID;
+                this.data[fire_pos.row][fire_pos.col] = FIRE_ON_SECOND_PLAYER_ID;
             } else {
                 this.data[fire_pos.row][fire_pos.col] = FIRE_ID;
             }
         });
         this.props.rerender();
         if (end) {
-            this.props.loseGame();
+            this.props.loseGame(end);
         } else {
             setTimeout(() => {this.endBoom(pos, fire);}, 2000);
         }
