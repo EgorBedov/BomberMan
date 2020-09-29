@@ -2,7 +2,7 @@ import Designer from 'Core/designer';
 import {DATA, moveFuncArgs, POS} from 'Interfaces';
 import {getMatrix, isNumberInRange} from 'Utils/utils';
 import Player from 'Core/player';
-import {BOMB_ID, BRICK_ID, FIRE_ID, HEIGHT, PLAYER_ID, STATIC_MAP, WALL_ID, WIDTH} from 'Constants';
+import {BOMB_ID, BRICK_ID, FIRE_ID, HEIGHT, PLAYER_ID, STATIC_MAP, TEXT, WALL_ID, WIDTH} from 'Constants';
 
 
 class SV {
@@ -24,8 +24,9 @@ class SV {
 
     public start(): void {
         this.gameOver = false;
-        this.data = STATIC_MAP;
-        this.player = new Player(this.data, this.rerender.bind(this))
+        this.data = JSON.parse(JSON.stringify(STATIC_MAP));
+        this.player = new Player(this.data,
+            {rerender: this.rerender.bind(this), loseGame: this.loseGame.bind(this)});
     }
 
     public handleKeyPress(ev: KeyboardEvent): void {
@@ -56,6 +57,14 @@ class SV {
 
         this.player.move(where);
         this.rerender();
+    }
+
+    public loseGame(): void {
+        alert(TEXT.YOU_LOST);
+        this.designer.toggleButtonStyle();
+        // this.clear();
+        this.player = null;
+        this.gameOver = true;
     }
 
     private handleStartButtonClick(): void {

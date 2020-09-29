@@ -10,6 +10,7 @@ export const WALL_ID = 3;
 export const BRICK_ID = 4;
 export const FIRE_ID = 5;
 export const BOMB_ON_PLAYER_ID = 6;
+export const FIRE_ON_PLAYER_ID = 7;
 
 export const STATIC_MAP: DATA = [
     [0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

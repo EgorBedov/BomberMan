@@ -25,6 +25,7 @@ class Designer {
 
         this.table = app.insertAdjacentElement('beforeend', Designer.createTable()) as HTMLTableElement;
         document.body.addEventListener('keydown', this.props.onKeyPress);
+        document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleButtonClick.call(this))
     }
 
     private static createTable(): HTMLTableElement {
@@ -48,6 +49,11 @@ class Designer {
     }
 
     private handleButtonClick(): void {
+        this.toggleButtonStyle();
+        this.props.onBtnClick();
+    }
+
+    public toggleButtonStyle(): void {
         this.button.blur();
         if (this.button.innerText === TEXT.BEGIN) {
             this.button.innerText = TEXT.END;
@@ -55,7 +61,6 @@ class Designer {
             this.button.innerText = TEXT.BEGIN;
         }
         this.button.classList.toggle('button_start');
-        this.props.onBtnClick();
     }
 
     public updateCanvas(data: DATA): void {
