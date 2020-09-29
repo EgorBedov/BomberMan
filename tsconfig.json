@@ -8,9 +8,6 @@
 
     "baseUrl": ".",
     "paths": {
-      "Components/*": ["src/components/*"],
-      "Pages/*": ["src/pages/*"],
-      "Models/*": ["src/models/*"],
       "Static/*": ["static/*"],
       "Core/*": ["src/core/*"],
       "Utils/*": ["src/utils/*"],
