@@ -2,6 +2,7 @@ import Designer from 'Core/designer';
 import {DATA, moveFuncArgs} from 'Interfaces';
 import {getMatrix} from 'Utils/utils';
 import Player from 'Core/player';
+import {STATIC_MAP} from 'Constants';
 
 
 class SV {
@@ -32,7 +33,8 @@ class SV {
 
     private clear() {
         this.gameOver = false;
-        this.data = getMatrix();
+        // this.data = getMatrix();
+        this.data = STATIC_MAP;
     }
 }
 

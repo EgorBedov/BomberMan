@@ -1,5 +1,6 @@
 import {DATA, moveFunc, moveFuncArgs, POS} from 'Interfaces';
-import {HEIGHT, PLAYER_ID, WIDTH} from 'Constants';
+import {BRICK_ID, HEIGHT, PLAYER_ID, WALL_ID, WIDTH} from 'Constants';
+import {isNumberInRange} from 'Utils/utils';
 
 export default class Player {
     private data: DATA;
@@ -17,21 +18,18 @@ export default class Player {
     }
 
     public move(where: moveFuncArgs): void {
-        this.data[this.pos.row][this.pos.column] = 0;
+        let {row, column} = this.pos;
+        this.data[row][column] = 0;
         switch (where) {
-        case 'up':
-            if (this.pos.row > 0) this.pos.row--;
-            break;
-        case 'left':
-            if (this.pos.column > 0) this.pos.column--;
-            break;
-        case 'right':
-            if (this.pos.column < WIDTH - 1) this.pos.column++;
-            break;
-        case 'down':
-            if (this.pos.row < HEIGHT - 1) this.pos.row++;
-            break;
+        case 'up':      row--;      break;
+        case 'down':    row++;      break;
+        case 'left':    column--;   break;
+        case 'right':   column++;   break;
         }
+
+        if (isNumberInRange(row, 0, HEIGHT-1)
+            && isNumberInRange(column, 0, WIDTH-1)
+            && ![WALL_ID, BRICK_ID].includes(this.data[row][column])) this.pos = {row: row, column: column};
         this.setSelf();
     }
 }

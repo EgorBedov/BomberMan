@@ -11,3 +11,7 @@ export const getMatrix = function(width: number = WIDTH, height: number = HEIGHT
     }
     return tmpArray;
 }
+
+export const isNumberInRange = function(num: number, min: number, max: number): boolean {
+    return num >= min && num <= max;
+}
