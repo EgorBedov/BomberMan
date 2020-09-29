@@ -12,29 +12,69 @@ class SV {
     private player: Player;
 
     constructor() {
-        this.clear();
-        this.player = new Player(this.data, this.rerender.bind(this));
-        this.designer = new Designer(this.data, this.move.bind(this), this.player.plantBomb.bind(this.player));
-    }
-
-    public start(): void {
-        this.clear();
+        this.gameOver = true;
+        this.data = getMatrix();
+        this.designer = new Designer(this.data, {
+            onKeyPress: this.handleKeyPress.bind(this),
+            onBtnClick: this.handleStartButtonClick.bind(this)
+        });
+        this.player = null;
         this.rerender();
     }
 
-    public move(where: moveFuncArgs): void {
+    public start(): void {
+        this.gameOver = false;
+        this.data = STATIC_MAP;
+        this.player = new Player(this.data, this.rerender.bind(this))
+    }
+
+    public handleKeyPress(ev: KeyboardEvent): void {
+        if (this.gameOver) return;
+
+        let where: moveFuncArgs;
+        switch (ev.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+            where = 'up';
+            break;
+        case 'ArrowLeft':
+        case 'KeyA':
+            where = 'left';
+            break;
+        case 'ArrowRight':
+        case 'KeyD':
+            where = 'right';
+            break;
+        case 'ArrowDown':
+        case 'KeyS':
+            where = 'down';
+            break;
+        case 'Space':
+            this.player.plantBomb();
+            break;
+        }
+
         this.player.move(where);
         this.rerender();
     }
 
+    private handleStartButtonClick(): void {
+        this.clear();
+        if (!this.gameOver) {
+            this.gameOver = true;
+        } else {
+            this.start();
+        }
+        this.rerender();
+    }
+
     private rerender() {
-        this.designer.updateCanvas();
+        this.designer.updateCanvas(this.data);
     }
 
     private clear() {
-        this.gameOver = false;
-        // this.data = getMatrix();
-        this.data = STATIC_MAP;
+        this.data = getMatrix();
+        this.rerender();
     }
 
     public static canPlace(what: number, pos: POS, data: DATA): boolean {

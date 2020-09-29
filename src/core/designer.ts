@@ -1,45 +1,33 @@
-import {WIDTH, HEIGHT} from 'Constants';
+import {WIDTH, HEIGHT, TEXT} from 'Constants';
 import {DATA} from 'Interfaces';
-import Player from 'Core/player';
+
+type IProps = {
+    onBtnClick: () => void,
+    onKeyPress: (ev: KeyboardEvent) => void,
+};
 
 class Designer {
     private table: HTMLTableElement;
-    private data: DATA;
+    private props: IProps;
+    private button: HTMLButtonElement;
 
-    constructor(data: DATA, onKeyPress: typeof Player.move, onSpacePress: typeof Player.plantBomb) {
-        this.data = data;
+    constructor(data: DATA, props: IProps) {
         this.table = null;
-        this._initCanvas(onKeyPress, onSpacePress);
+        this.props = props;
+
+        this.init();
     }
 
-    _initCanvas(onKeyPress: typeof Player.move, onSpacePress: typeof Player.plantBomb): void {
-        this.table = document.querySelector('#application').insertAdjacentElement('afterbegin', this._createTable()) as HTMLTableElement;
-        document.body.addEventListener('keydown', (e) => {
-            switch (e.code) {
-            case 'KeyW':
-            case 'ArrowUp':
-                onKeyPress('up');
-                break;
-            case 'ArrowLeft':
-            case 'KeyA':
-                onKeyPress('left');
-                break;
-            case 'ArrowRight':
-            case 'KeyD':
-                onKeyPress('right');
-                break;
-            case 'ArrowDown':
-            case 'KeyS':
-                onKeyPress('down');
-                break;
-            case 'Space':
-                onSpacePress();
-                break;
-            }
-        });
+    public init(): void {
+        const app = document.querySelector('#application');
+        this.button = app.insertAdjacentElement('afterbegin', Designer.createButton()) as HTMLButtonElement;
+        this.button.addEventListener('click', this.handleButtonClick.bind(this));
+
+        this.table = app.insertAdjacentElement('beforeend', Designer.createTable()) as HTMLTableElement;
+        document.body.addEventListener('keydown', this.props.onKeyPress);
     }
 
-    _createTable(): HTMLTableElement {
+    private static createTable(): HTMLTableElement {
         const elem = document.createElement('table');
         elem.className = 'base';
         for (let iii = 0; iii < HEIGHT; iii++) {
@@ -52,12 +40,30 @@ class Designer {
         return elem;
     }
 
-    updateCanvas(): void {
+    private static createButton(): HTMLElement {
+        const elem = document.createElement('button');
+        elem.className = 'button button_start';
+        elem.innerText = TEXT.BEGIN;
+        return elem;
+    }
+
+    private handleButtonClick(): void {
+        this.button.blur();
+        if (this.button.innerText === TEXT.BEGIN) {
+            this.button.innerText = TEXT.END;
+        } else {
+            this.button.innerText = TEXT.BEGIN;
+        }
+        this.button.classList.toggle('button_start');
+        this.props.onBtnClick();
+    }
+
+    public updateCanvas(data: DATA): void {
         const rows = this.table.rows;
         for (let iii = 0; iii < HEIGHT; iii++) {
             const row = rows.item(iii);
             for (let jjj = 0; jjj < WIDTH; jjj++) {
-                row.cells.item(jjj).className = `cell cell-${this.data[iii][jjj]}`;
+                row.cells.item(jjj).className = `cell cell_${data[iii][jjj]}`;
             }
         }
     }

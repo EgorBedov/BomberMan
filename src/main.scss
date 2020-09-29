@@ -31,28 +31,20 @@ body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+
+  &_1 { background-image: url('~Static/icons/js.svg'); }
+  &_2 { background-image: url('~Static/icons/react.svg'); }
+  &_3 { background: blue; }
+  &_4 { background: saddlebrown; }
+  &_5 { background-image: url('~Static/icons/fire.svg'); }
+  &_6 { background-image: url('~Static/icons/react+js.svg'); }
 }
 
-.cell-1 {
-  background-image: url('~Static/icons/js.svg');
-}
+.button {
+  padding: 20px;
+  background: red;
 
-.cell-2 {
-  background-image: url('~Static/icons/react.svg');
-}
-
-.cell-3 {
-  background: blue;
-}
-
-.cell-4 {
-  background: saddlebrown;
-}
-
-.cell-5 {
-  background-image: url('~Static/icons/fire.svg');
-}
-
-.cell-6 {
-  background-image: url('~Static/icons/react+js.svg');
+  &_start {
+    background: chartreuse;
+  }
 }
