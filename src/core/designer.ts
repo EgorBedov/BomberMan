@@ -6,13 +6,13 @@ class Designer {
     private table: HTMLTableElement;
     private data: DATA;
 
-    constructor(data: DATA, onKeyPress: typeof Player.move) {
+    constructor(data: DATA, onKeyPress: typeof Player.move, onSpacePress: typeof Player.plantBomb) {
         this.data = data;
         this.table = null;
-        this._initCanvas(onKeyPress);
+        this._initCanvas(onKeyPress, onSpacePress);
     }
 
-    _initCanvas(onKeyPress: typeof Player.move): void {
+    _initCanvas(onKeyPress: typeof Player.move, onSpacePress: typeof Player.plantBomb): void {
         this.table = document.querySelector('#application').insertAdjacentElement('afterbegin', this._createTable()) as HTMLTableElement;
         document.body.addEventListener('keydown', (e) => {
             switch (e.code) {
@@ -33,6 +33,7 @@ class Designer {
                 onKeyPress('down');
                 break;
             case 'Space':
+                onSpacePress();
                 break;
             }
         });
@@ -56,7 +57,7 @@ class Designer {
         for (let iii = 0; iii < HEIGHT; iii++) {
             const row = rows.item(iii);
             for (let jjj = 0; jjj < WIDTH; jjj++) {
-                row.cells.item(jjj).className = `cell-${this.data[iii][jjj]}`;
+                row.cells.item(jjj).className = `cell cell-${this.data[iii][jjj]}`;
             }
         }
     }

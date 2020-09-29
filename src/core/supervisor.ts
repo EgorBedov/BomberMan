@@ -1,8 +1,8 @@
 import Designer from 'Core/designer';
 import {DATA, moveFuncArgs} from 'Interfaces';
-import {getMatrix} from 'Utils/utils';
+import {getMatrix, isNumberInRange} from 'Utils/utils';
 import Player from 'Core/player';
-import {STATIC_MAP} from 'Constants';
+import {BOMB_ID, BRICK_ID, FIRE_ID, HEIGHT, PLAYER_ID, STATIC_MAP, WALL_ID, WIDTH} from 'Constants';
 
 
 class SV {
@@ -13,8 +13,8 @@ class SV {
 
     constructor() {
         this.clear();
-        this.player = new Player(this.data);
-        this.designer = new Designer(this.data, this.move.bind(this));
+        this.player = new Player(this.data, this.rerender.bind(this));
+        this.designer = new Designer(this.data, this.move.bind(this), this.player.plantBomb.bind(this.player));
     }
 
     public start(): void {
@@ -35,6 +35,17 @@ class SV {
         this.gameOver = false;
         // this.data = getMatrix();
         this.data = STATIC_MAP;
+    }
+
+    public static canPlace(what: number, row: number, col: number, data: DATA): boolean {
+        let arr: Array<number>;
+        switch (what) {
+        case PLAYER_ID: arr = [WALL_ID, BRICK_ID, BOMB_ID];  break;
+        case FIRE_ID:   arr = [WALL_ID];            break;
+        }
+        return isNumberInRange(row, 0, HEIGHT-1)
+            && isNumberInRange(col, 0, WIDTH-1)
+            && !arr.includes(data[row][col]);
     }
 }
 

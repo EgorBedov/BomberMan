@@ -27,11 +27,32 @@ body {
   border: 1px solid blue;
 }
 
-.cell-1 {
+.cell {
   background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.cell-1 {
   background-image: url('~Static/icons/js.svg');
 }
 
+.cell-2 {
+  background-image: url('~Static/icons/react.svg');
+}
+
 .cell-3 {
-  background: red;
+  background: blue;
+}
+
+.cell-4 {
+  background: saddlebrown;
+}
+
+.cell-5 {
+  background-image: url('~Static/icons/fire.svg');
+}
+
+.cell-6 {
+  background-image: url('~Static/icons/react+js.svg');
 }
