@@ -11,13 +11,18 @@ body {
 
 #application {
   min-height: 100vh;
-  display: flex;
-  flex-flow: column;
-}
-
-.page {
+  min-width: 100vw;
   display: flex;
   flex-flow: column;
   align-items: center;
-  flex: 1;
+  justify-content: center;
+}
+
+.base {
+  width: 800px;
+}
+
+.base td {
+  height: 40px;
+  border: 1px solid blue;
 }

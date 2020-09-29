@@ -1,5 +1,3 @@
-import {WIDTH, HEIGHT} from "Constants";
-
 export type Person = {
     name: string,
     surname: string,
