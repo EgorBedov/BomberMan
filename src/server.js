@@ -1,5 +1,5 @@
-import http = require('http');
-import fs = require('fs');
+let http = require('http'),
+    fs = require('fs');
 
 http.createServer(function(req, res) {
     let path, type;

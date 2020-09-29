@@ -13,7 +13,7 @@ module.exports = {
     devtool: 'source-map',
 
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts', '.js', '.svg', '.gif', 'png'],
         alias: {
             Static: path.resolve(__dirname, 'static/'),
             Core: path.resolve(__dirname, 'src/core/'),
@@ -42,17 +42,20 @@ module.exports = {
                 ]
             },
             {
-                test: /\.s[ac]ss$/,
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                exclude: [
+                    path.resolve(__dirname, './node_modules'),
+                ],
                 use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'sass-loader'
+                    {loader: 'file-loader'},
                 ]
             },
             {
-                test: /\.(png|jpe?g|gif|svg)$/i,
+                test: /\.s[ac]ss$/,
                 use: [
-                    'file-loader'
+                    MiniCssExtractPlugin.loader,
+                    {loader: 'css-loader'},
+                    {loader: 'sass-loader'},
                 ]
             },
         ]
