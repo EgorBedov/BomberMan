@@ -1,37 +1,39 @@
-import {DATA, moveFuncArgs, POS} from 'Interfaces';
-import {FIRE_ID} from 'Constants';
+import {moveFuncArgs, POS} from 'Interfaces';
+import {ADD_BOMB, ADD_POWER, BOMB_ID, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
 import SV from 'Core/supervisor';
 import {
-    getBombIdByPlayerId,
+    getBombIdByPlayer,
     getBombOnPLayerIdByPlayerId,
     getFireOnPlayerIdByPlayerId,
     getInitPosByPlayerId
 } from 'Utils/utils';
 import Data from 'Core/data';
+import Bomb from 'Core/bomb';
 
 type PowerType = number;
 type IProps = {
     killPlayer: (player_id: number) => void,
-    plantBomb: (player_id: number, pos: POS, power: number) => void,
 }
 
 export default class Player {
     public static rerender: () => void;
 
     private pos: POS;
-    private bombsLeft: number;
+    public bombsLeft: number;
     private power: PowerType;
     private props: IProps;
     readonly id: number;
     private readonly fire_icon_id: number;
     private readonly bomb_icon_id: number;
-    private readonly bomb_id: number;
     alive: boolean;
+    public abilities = {
+        nuclear: false,
+        slow: false,
+    };
 
     constructor(id: number, props: IProps) {
         this.id = id;
         this.alive = true;
-        this.bomb_id = getBombIdByPlayerId(this.id);
         this.fire_icon_id = getFireOnPlayerIdByPlayerId(this.id);
         this.bomb_icon_id = getBombOnPLayerIdByPlayerId(this.id);
         this.pos = getInitPosByPlayerId(this.id);
@@ -43,8 +45,7 @@ export default class Player {
     }
 
     private setSelf(): void {
-        // Data.data[this.pos.row][this.pos.col] = this.icon_id;
-        if (Data.data[this.pos.row][this.pos.col] === this.bomb_id) {
+        if (Data.data[this.pos.row][this.pos.col] === BOMB_ID) {
             Data.data[this.pos.row][this.pos.col] = this.bomb_icon_id;
         } else {
             Data.data[this.pos.row][this.pos.col] = this.id;
@@ -53,7 +54,7 @@ export default class Player {
 
     private clearPlace(): void {
         if (Data.data[this.pos.row][this.pos.col] === this.bomb_icon_id) {
-            Data.data[this.pos.row][this.pos.col] = this.bomb_id;
+            Data.data[this.pos.row][this.pos.col] = BOMB_ID;
         } else {
             Data.data[this.pos.row][this.pos.col] = 0;
         }
@@ -75,18 +76,28 @@ export default class Player {
             this.setSelf();
             return;
         }
-        if (Data.data[row][col] === FIRE_ID) {
+        switch (Data.data[this.pos.row][this.pos.col]) {
+        case FIRE_ID:
             Data.data[row][col] = this.fire_icon_id;
             Player.rerender();
             this.props.killPlayer(this.id);
             return;
+        case ADD_BOMB:
+            this.bombsLeft++;
+            break;
+        case ADD_POWER:
+            this.power++;
+            break;
+        case MAKE_NUCLEAR:
+            this.abilities.nuclear = true;
+            break;
         }
         this.setSelf();
     }
 
     public plantBomb(): void {
         if (this.bombsLeft > 0) {
-            this.props.plantBomb(this.id, {...this.pos}, this.power);
+            new Bomb(this, {...this.pos}, this.power);
         }
     }
 }

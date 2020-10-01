@@ -34,17 +34,22 @@ body {
   background-position: center;
 
   &_1 { background-image: url('~Static/icons/js.svg'); }
-  &_2 { background-image: url('~Static/icons/react.svg'); }
+  &_2 { background-image: url('~Static/icons/bomb.svg'); }
   &_3 { background: blue; }
   &_4 { background: saddlebrown; }
   &_5 { background-image: url('~Static/icons/fire.svg'); }
-  &_6 { background-image: url('~Static/icons/js+react.svg'); }
+  &_6 { background-image: url('~Static/icons/js+bomb.svg'); }
   &_7 { background-image: url('~Static/icons/js+fire.svg'); }
   &_8 { background: red; }
   &_9 { background-image: url('~Static/icons/ts.svg'); }
-  &_10 { background-image: url('~Static/icons/ts+redux.svg'); }
+  &_10 { background-image: url('~Static/icons/ts+bomb.svg'); }
   &_11 { background-image: url('~Static/icons/ts+fire.svg'); }
   &_12 { background-image: url('~Static/icons/redux.svg'); }
+  &_13 { background-image: url('~Static/icons/bomb_add.svg'); }
+  &_14 { background-image: url('~Static/icons/fire_add.svg'); }
+  &_15 { background-image: url('~Static/icons/react.svg'); }
+  &_16 { background: saddlebrown url('~Static/icons/fire.svg') center no-repeat; }
+  &_17 { background: blue url('~Static/icons/fire.svg') center no-repeat; }
 }
 
 .menu {

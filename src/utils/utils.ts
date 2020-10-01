@@ -1,14 +1,16 @@
 import {
+    ADD_BOMB, ADD_POWER,
     BOMB_ID, BOMB_ID_2,
     BOMB_ON_PLAYER_ID,
     BOMB_ON_SECOND_PLAYER_ID,
     FIRE_ON_PLAYER_ID, FIRE_ON_SECOND_PLAYER_ID,
-    HEIGHT,
+    HEIGHT, MAKE_NUCLEAR,
     PLAYER_ID,
     SECOND_PLAYER_ID,
     WIDTH
 } from 'Constants';
 import {DATA, POS} from 'Interfaces';
+import Player from 'Core/player';
 
 export const getMatrix = function(width: number = WIDTH, height: number = HEIGHT): DATA {
     const tmpArray = [];
@@ -32,8 +34,8 @@ export const getBombOnPLayerIdByPlayerId = function(player_id: number): number {
     }
 }
 
-export const getBombIdByPlayerId = function(player_id: number): number {
-    switch (player_id) {
+export const getBombIdByPlayer = function(p: Player): number {
+    switch (p.id) {
     case PLAYER_ID: return BOMB_ID;
     case SECOND_PLAYER_ID: return BOMB_ID_2;
     }
@@ -64,7 +66,7 @@ export const getInitPosByPlayerId = function(player_id: number): POS {
     }
 }
 
-export const getPlayerId = function(id: number): number {
+export function getPlayerId(id: number): number {
     switch (id) {
     case PLAYER_ID:
     case BOMB_ON_PLAYER_ID:
@@ -74,4 +76,19 @@ export const getPlayerId = function(id: number): number {
     case FIRE_ON_SECOND_PLAYER_ID: return SECOND_PLAYER_ID;
     default: return 0;
     }
+}
+
+export function getBonus(): number {
+    switch (getRandomInt(15)) {
+    case 4:
+    case 5: return ADD_BOMB;
+    case 6:
+    case 7: return ADD_POWER;
+    case 10: return MAKE_NUCLEAR;
+    default: return 0;
+    }
+}
+
+export function getRandomInt(max: number): number {
+    return Math.floor(Math.random() * Math.floor(max));
 }

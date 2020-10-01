@@ -6,7 +6,7 @@ import {
     BOMB_ID, BOMB_ID_2,
     BRICK_ID,
     FIRE_ID,
-    HEIGHT, LAVA_ID,
+    HEIGHT, LAVA_ID, MAKE_NUCLEAR,
     PLAYER_ID,
     SECOND_PLAYER_ID,
     STATIC_MAP,
@@ -78,11 +78,6 @@ class SV {
         this.rerender();
     }
 
-    public plantBomb(player_id: number, pos: POS, power: number): void {
-        new Bomb(player_id, pos, power);
-        this.rerender();
-    }
-
     public endGame(): void {
         this.designer.toggleStartButtonStyle();
         this.gameOver = true;
@@ -128,9 +123,9 @@ class SV {
     }
 
     private initPlayers(): void {
-        this.players = [new Player(PLAYER_ID, {killPlayer: this.killPlayer.bind(this), plantBomb: this.plantBomb.bind(this)})];
+        this.players = [new Player(PLAYER_ID, {killPlayer: this.killPlayer.bind(this)})];
         if (this.multiplayer) {
-            this.players.push(new Player(SECOND_PLAYER_ID, {killPlayer: this.killPlayer.bind(this), plantBomb: this.plantBomb.bind(this)}));
+            this.players.push(new Player(SECOND_PLAYER_ID, {killPlayer: this.killPlayer.bind(this)}));
         }
     }
 
@@ -147,7 +142,8 @@ class SV {
         switch (what) {
         case SECOND_PLAYER_ID:
         case PLAYER_ID: arr = [WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2];      break;
-        case FIRE_ID:   arr = [WALL_ID];                                    break;
+        case FIRE_ID:   arr = [WALL_ID, LAVA_ID];                                    break;
+        case MAKE_NUCLEAR:   arr = [LAVA_ID];                                    break;
         }
 
         return isNumberInRange(pos.row, 0, HEIGHT-1)

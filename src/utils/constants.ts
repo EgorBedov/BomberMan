@@ -14,6 +14,11 @@ export const SECOND_PLAYER_ID = 9;
 export const BOMB_ON_SECOND_PLAYER_ID = 10;
 export const FIRE_ON_SECOND_PLAYER_ID = 11;
 export const BOMB_ID_2 = 12;
+export const ADD_BOMB = 13;
+export const ADD_POWER = 14;
+export const MAKE_NUCLEAR = 15;
+export const FIRE_ON_BRICK_ID = 16;
+export const FIRE_ON_WALL_ID = 17;
 
 export const PLAYER_IDS = [PLAYER_ID, SECOND_PLAYER_ID];
 export const PLAYERS_ON_MAP = [...PLAYER_IDS, BOMB_ON_PLAYER_ID, BOMB_ON_SECOND_PLAYER_ID];
