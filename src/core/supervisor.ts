@@ -5,7 +5,7 @@ import Player from 'Core/player';
 import {
     BOMB_ID, BOMB_ID_2,
     BRICK_ID,
-    FIRE_ID,
+    FIRE_ID, FIRE_ON_BRICK_ID, FIRE_ON_WALL_ID,
     HEIGHT, LAVA_ID, MAKE_NUCLEAR,
     PLAYER_ID,
     SECOND_PLAYER_ID,
@@ -123,6 +123,7 @@ class SV {
     }
 
     private initPlayers(): void {
+        this.initMap();
         this.players = [new Player(PLAYER_ID, {killPlayer: this.killPlayer.bind(this)})];
         if (this.multiplayer) {
             this.players.push(new Player(SECOND_PLAYER_ID, {killPlayer: this.killPlayer.bind(this)}));
@@ -141,9 +142,9 @@ class SV {
         let arr: Array<number>;
         switch (what) {
         case SECOND_PLAYER_ID:
-        case PLAYER_ID: arr = [WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2];      break;
-        case FIRE_ID:   arr = [WALL_ID, LAVA_ID];                                    break;
-        case MAKE_NUCLEAR:   arr = [LAVA_ID];                                    break;
+        case PLAYER_ID: arr = [PLAYER_ID, SECOND_PLAYER_ID, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
+        case FIRE_ID:   arr = [WALL_ID, LAVA_ID]; break;
+        case MAKE_NUCLEAR:   arr = [LAVA_ID]; break;
         }
 
         return isNumberInRange(pos.row, 0, HEIGHT-1)
