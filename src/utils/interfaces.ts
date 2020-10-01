@@ -3,6 +3,8 @@ export type POS = {
     col: number,
 };
 
+export type FireArea = Array<POS>;
+
 export type moveFuncArgs = 'up' | 'left' | 'right' | 'down';
 export type moveFunc =  (where: moveFuncArgs) => void;
 
@@ -10,3 +12,5 @@ export type moveFunc =  (where: moveFuncArgs) => void;
 // export type DATA = [Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>];
 
 export type DATA = any;
+
+export type SV_KillPlayer = () => void;

@@ -1,5 +1,5 @@
 import {WIDTH, HEIGHT, TEXT} from 'Constants';
-import {DATA} from 'Interfaces';
+import Data from 'Core/data';
 
 type IProps = {
     onBtnClick: () => void,
@@ -13,7 +13,7 @@ class Designer {
     private button: HTMLButtonElement;
     private playersButtons: HTMLButtonElement;
 
-    constructor(data: DATA, props: IProps) {
+    constructor(props: IProps) {
         this.table = null;
         this.props = props;
 
@@ -76,12 +76,13 @@ class Designer {
         this.button.classList.toggle('button_start');
     }
 
-    public updateCanvas(data: DATA): void {
+    public updateCanvas(): void {
+        const d = Data.data;
         const rows = this.table.rows;
         for (let iii = 0; iii < HEIGHT; iii++) {
             const row = rows.item(iii);
             for (let jjj = 0; jjj < WIDTH; jjj++) {
-                row.cells.item(jjj).className = `cell cell_${data[iii][jjj]}`;
+                row.cells.item(jjj).className = `cell cell_${d[iii][jjj]}`;
             }
         }
     }

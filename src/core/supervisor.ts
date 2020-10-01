@@ -14,21 +14,19 @@ import {
     WALL_ID,
     WIDTH
 } from 'Constants';
+import Bomb from 'Core/bomb';
+import Data from 'Core/data';
 
 
 class SV {
     private designer: Designer;
-    private data: DATA;
-    private gameOver: boolean;
-    private player: Player;
-    private secondPlayer: Player;
-    private multiplayer: boolean;
+    private gameOver = true;
+    private multiplayer = false;
+    private players: Array<Player> = [];
 
     constructor() {
-        this.gameOver = true;
-        this.multiplayer = false;
-        this.initMap();
-        this.designer = new Designer(this.data, {
+        this.config();
+        this.designer = new Designer({
             onKeyPress: this.handleKeyPress.bind(this),
             onBtnClick: this.handleStartButtonClick.bind(this),
             onPlayersBtnClick: this.handlePlayersButtonClick.bind(this),
@@ -64,35 +62,51 @@ class SV {
             where = 'down';
             break;
         case 'Space':
-            this.player.plantBomb();
+            this.players[0].plantBomb();
             break;
         case 'ShiftRight':
-            if (this.multiplayer) this.secondPlayer.plantBomb();
+            if (this.multiplayer) this.players[1].plantBomb();
             break;
         }
 
         if (this.multiplayer && ev.code.includes('Arrow')) {
-            this.secondPlayer.move(where);
+            this.players[1].move(where);
         } else {
-            this.player.move(where);
+            this.players[0].move(where);
         }
 
         this.rerender();
     }
 
-    public loseGame(player_id: number): void {
-        let text = 'Игрок ';
-        if (this.multiplayer) {
-            text += player_id === 1 ? 2 : 1;
-            text += ' ' + TEXT.YOU_WIN;
-        } else {
-            text += player_id + ' ' + TEXT.YOU_LOST;
-        }
-        alert(text);
+    public plantBomb(player_id: number, pos: POS, power: number): void {
+        new Bomb(player_id, pos, power);
+        this.rerender();
+    }
+
+    public endGame(): void {
         this.designer.toggleStartButtonStyle();
-        this.player = null;
-        if (this.multiplayer) this.secondPlayer = null;
         this.gameOver = true;
+    }
+
+    private config(): void {
+        this.initMap();
+        Player.rerender = Bomb.rerender = this.rerender.bind(this);
+        Bomb.killPlayer = this.killPlayer.bind(this);
+    }
+
+    private killPlayer(player_id: number): void {
+        this.players.find((p) => p.id === player_id).alive = false;
+        let players_alive = 0;
+        this.players.forEach(p => {if (p.alive) players_alive++;})
+        if (this.multiplayer) {
+            if (players_alive === 1) {
+                alert(this.players.find((p) => p.id === player_id).id + TEXT.YOU_WIN);
+                this.endGame();
+            }
+        } else if (players_alive === 0) {
+            alert('Игрок номер ' + this.players.find((p) => p.id === player_id).id + TEXT.YOU_LOST);
+            this.endGame();
+        }
     }
 
     private handleStartButtonClick(): void {
@@ -114,22 +128,18 @@ class SV {
     }
 
     private initPlayers(): void {
-        this.player = new Player(1, this.data,
-            {rerender: this.rerender.bind(this), loseGame: this.loseGame.bind(this)});
+        this.players = [new Player(PLAYER_ID, {killPlayer: this.killPlayer.bind(this), plantBomb: this.plantBomb.bind(this)})];
         if (this.multiplayer) {
-            this.secondPlayer = new Player(2, this.data,
-                {rerender: this.rerender.bind(this), loseGame: this.loseGame.bind(this)});
-        } else {
-            this.secondPlayer = null;
+            this.players.push(new Player(SECOND_PLAYER_ID, {killPlayer: this.killPlayer.bind(this), plantBomb: this.plantBomb.bind(this)}));
         }
     }
 
     private rerender() {
-        this.designer.updateCanvas(this.data);
+        this.designer.updateCanvas();
     }
 
     private initMap() {
-        this.data = JSON.parse(JSON.stringify(STATIC_MAP))
+        Data.data = JSON.parse(JSON.stringify(STATIC_MAP))
     }
 
     public static canPlace(what: number, pos: POS, data: DATA): boolean {
