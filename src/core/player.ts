@@ -1,5 +1,5 @@
 import {POS} from 'Interfaces';
-import {ADD_BOMB, ADD_POWER, BOMB_ID, DIRECTIONS, ENEMY_ID, FIRE_ID, MAKE_NUCLEAR, PLAYER_IDS} from 'Constants';
+import {ADD_BOMB, ADD_POWER, BOMB_ID, DIRECTIONS, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
 import {
     canPlace,
     getBombOnPLayerIdByPlayerId,

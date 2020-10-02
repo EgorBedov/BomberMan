@@ -81,7 +81,7 @@ class Designer {
     }
 
     private handleStartButtonClick(): void {
-        this.toggleStartButtonStyle();
+        this.button.blur();
         this.props.onBtnClick();
     }
 
@@ -98,14 +98,9 @@ class Designer {
         this.playersButtons.innerText = this.playersButtons.innerText === '1' ? '2' : '1';
     }
 
-    public toggleStartButtonStyle(): void {
-        this.button.blur();
-        if (this.button.innerText === TEXT.BEGIN) {
-            this.button.innerText = TEXT.END;
-        } else {
-            this.button.innerText = TEXT.BEGIN;
-        }
-        this.button.classList.toggle('button_start');
+    public toggleStartButtonStyle(gameOver: boolean): void {
+        this.button.innerText = gameOver ? TEXT.BEGIN : TEXT.END;
+        this.button.classList.toggle('button_start', gameOver);
     }
 
     public updateCanvas(): void {

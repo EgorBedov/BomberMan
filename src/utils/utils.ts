@@ -142,8 +142,11 @@ export function canPlace(what: number, pos: POS, data: DATA): boolean {
     let arr: Array<number>;
     switch (true) {
     case what === ENEMY_ID:
+    case ENEMIES_IDS.includes(what):
     case PLAYER_IDS.includes(what):
-    case ENEMIES_IDS.includes(what): arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
+        arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID];
+        if (ENEMIES_IDS.includes(what)) arr.push(FIRE_ID);
+        break;
     case what === FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
     case what === MAKE_NUCLEAR:   arr = [NO_BLOCK_ID, LAVA_ID]; break;
     }

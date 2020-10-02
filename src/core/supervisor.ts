@@ -63,12 +63,12 @@ class SV {
     }
 
     public endGame(): void {
-        this.designer.toggleStartButtonStyle();
         this.gameOver = true;
-        this.enemies.forEach(e => {e.stop();});
+        this.stopEnemies();
     }
 
     public start(): void {
+        this.gameOver = false;
         this.enemies.forEach(e => {e.start();});
     }
 
@@ -111,8 +111,12 @@ class SV {
 
     private handleStartButtonClick(): void {
         this.initAll();
-        this.gameOver = !this.gameOver;
-        this.start();
+        if (this.gameOver) {
+            this.start();
+        } else {
+            this.endGame();
+        }
+        this.designer.toggleStartButtonStyle(this.gameOver);
         this.renderAll();
     }
 
@@ -173,6 +177,7 @@ class SV {
     }
 
     private initEnemies(): void {
+        this.stopEnemies();
         this.enemies = [];
         if (this.withEnemies) {
             for (let iii = this.players.length; iii < MAX_PLAYERS; iii++) {
@@ -187,6 +192,10 @@ class SV {
             this.players.push(new Player(PLAYER_2_ID));
         }
         this.initEnemies();
+    }
+
+    private stopEnemies(): void {
+        this.enemies.forEach(e => {e.stop();});
     }
 }
 
