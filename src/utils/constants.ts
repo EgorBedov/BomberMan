@@ -111,3 +111,6 @@ export const TEXT = {
     YOU_LOST: 'Вы проиграли',
     YOU_WIN: 'Вы выиграли',
 };
+
+// DO NOT CHANGE IT
+export const DIRECTIONS = ['up', 'down', 'left', 'right'];

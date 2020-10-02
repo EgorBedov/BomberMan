@@ -5,8 +5,7 @@ export type POS = {
 
 export type FireArea = Array<POS>;
 
-export type moveFuncArgs = 'up' | 'left' | 'right' | 'down';
-export type moveFunc =  (where: moveFuncArgs) => void;
+export type moveFunc =  (where: string) => void;
 
 // type DATA_ROW = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
 // export type DATA = [Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>];

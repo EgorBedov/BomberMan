@@ -1,5 +1,5 @@
-import {moveFuncArgs, POS} from 'Interfaces';
-import {ADD_BOMB, ADD_POWER, BOMB_ID, ENEMY_ID, FIRE_ID, MAKE_NUCLEAR, PLAYER_IDS} from 'Constants';
+import {POS} from 'Interfaces';
+import {ADD_BOMB, ADD_POWER, BOMB_ID, DIRECTIONS, ENEMY_ID, FIRE_ID, MAKE_NUCLEAR, PLAYER_IDS} from 'Constants';
 import {
     canPlace,
     getBombOnPLayerIdByPlayerId,
@@ -43,6 +43,7 @@ export default class Player {
         } else {
             Data.data[this.pos.row][this.pos.col] = this.id;
         }
+        Player.rerender();
     }
 
     private clearPlace(): void {
@@ -53,29 +54,29 @@ export default class Player {
         }
     }
 
-    public move(where: moveFuncArgs): void {
-        if (!this.alive) return;
+    public move(where: string): boolean {
+        if (!this.alive) return false;
         let {row, col} = this.pos;
         this.clearPlace();
         switch (where) {
-        case 'up':      row--;      break;
-        case 'down':    row++;      break;
-        case 'left':    col--;   break;
-        case 'right':   col++;   break;
+        case DIRECTIONS[0]:     row--;      break;
+        case DIRECTIONS[1]:     row++;      break;
+        case DIRECTIONS[2]:     col--;      break;
+        case DIRECTIONS[3]:     col++;      break;
         }
 
         if (canPlace(this.id, {row, col}, Data.data)) {
             this.pos = {row, col};
         } else {
             this.setSelf();
-            return;
+            return false;
         }
         switch (Data.data[this.pos.row][this.pos.col]) {
         case FIRE_ID:
             Data.data[row][col] = this.fire_icon_id;
             Player.rerender();
             Player.killPlayer(this.id);
-            return;
+            return false;
         case ADD_BOMB:
             this.bombsLeft++;
             break;
@@ -87,6 +88,7 @@ export default class Player {
             break;
         }
         this.setSelf();
+        return true;
     }
 
     public plantBomb(): void {

@@ -140,11 +140,12 @@ export function getRandomInt(max: number): number {
 
 export function canPlace(what: number, pos: POS, data: DATA): boolean {
     let arr: Array<number>;
-    switch (what) {
-    case PLAYER_2_ID:
-    case PLAYER_1_ID: arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
-    case FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
-    case MAKE_NUCLEAR:   arr = [NO_BLOCK_ID, LAVA_ID]; break;
+    switch (true) {
+    case what === ENEMY_ID:
+    case PLAYER_IDS.includes(what):
+    case ENEMIES_IDS.includes(what): arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
+    case what === FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
+    case what === MAKE_NUCLEAR:   arr = [NO_BLOCK_ID, LAVA_ID]; break;
     }
 
     return isNumberInRange(pos.row, 0, Data.height-1)

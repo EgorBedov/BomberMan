@@ -1,7 +1,7 @@
 import Designer from 'Core/designer';
-import {moveFuncArgs} from 'Interfaces';
 import Player from 'Core/player';
 import {
+    DIRECTIONS,
     EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
     TEXT,
@@ -29,23 +29,23 @@ class SV {
     public handleKeyPress(ev: KeyboardEvent): void {
         if (this.gameOver) return;
 
-        let where: moveFuncArgs;
+        let where;
         switch (ev.code) {
         case 'KeyW':
         case 'ArrowUp':
-            where = 'up';
+            where = DIRECTIONS[0];
             break;
         case 'ArrowLeft':
         case 'KeyA':
-            where = 'left';
+            where = DIRECTIONS[2];
             break;
         case 'ArrowRight':
         case 'KeyD':
-            where = 'right';
+            where = DIRECTIONS[3];
             break;
         case 'ArrowDown':
         case 'KeyS':
-            where = 'down';
+            where = DIRECTIONS[1];
             break;
         case 'Space':
             this.players[0].plantBomb();
@@ -60,13 +60,12 @@ class SV {
         } else {
             this.players[0].move(where);
         }
-
-        this.rerender();
     }
 
     public endGame(): void {
         this.designer.toggleStartButtonStyle();
         this.gameOver = true;
+        this.enemies.forEach(e => {e.stop();});
     }
 
     public start(): void {
