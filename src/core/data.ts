@@ -1,29 +1,37 @@
-import {getMatrix} from 'Utils/utils';
 import {DATA} from 'Interfaces';
+import {EMPTY_MAP_INDEX, MAPS} from 'Constants';
 
 const dataSymbol = Symbol('The only data symbol');
 const dataCreatorSymbol = Symbol('The only thing that can create data')
 
 class Data {
     public static data: DATA;
-    private static _data: DATA;
+    public static map_id: number;
 
     constructor(creator: symbol | any) {
         if (creator !== dataCreatorSymbol) {
             throw 'Instantiation failed: use dataSymbol.instance instead of new()';
         }
 
-        Data._data = getMatrix();
+        const id = EMPTY_MAP_INDEX;
+        Data.data = JSON.parse(JSON.stringify(MAPS[id]));
+        Data.map_id = id;
     }
 
-    get data(): DATA {
+    static setData(id: number): void {
         if (!this[dataSymbol]) this[dataSymbol] = new Data(dataCreatorSymbol);
-        return Data._data;
+        Data.data = JSON.parse(JSON.stringify(MAPS[id]));
+        Data.map_id = id;
     }
 
-    set data(d : DATA) {
+    static get width(): number {
         if (!this[dataSymbol]) this[dataSymbol] = new Data(dataCreatorSymbol);
-        Data._data = d;
+        return Data.data[0].length;
+    }
+
+    static get height(): number {
+        if (!this[dataSymbol]) this[dataSymbol] = new Data(dataCreatorSymbol);
+        return Data.data.length;
     }
 }
 

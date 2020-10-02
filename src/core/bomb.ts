@@ -1,11 +1,11 @@
 import {FireArea, POS} from 'Interfaces';
-import SV from 'Core/supervisor';
 import {
     BRICK_ID,
     FIRE_ID, FIRE_ON_BRICK_ID, FIRE_ON_WALL_ID, MAKE_NUCLEAR,
     PLAYERS_ON_MAP, WALL_ID,
 } from 'Constants';
 import {
+    canPlace,
     getBombIdByPlayer,
     getBombOnPLayerIdByPlayerId, getBonus,
     getFireOnPlayerIdBy,
@@ -50,7 +50,7 @@ class Bomb {
                 case 3:     tmp_pos.col -= jjj;     break;
                 }
 
-                if (!SV.canPlace(to_check, tmp_pos, Data.data)) break;
+                if (!canPlace(to_check, tmp_pos, Data.data)) break;
                 fire.push({...tmp_pos});
                 if (Data.data[tmp_pos.row][tmp_pos.col] === BRICK_ID) break;
                 if (nuclear && Data.data[tmp_pos.row][tmp_pos.col] === WALL_ID) break;

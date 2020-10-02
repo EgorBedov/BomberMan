@@ -1,21 +1,15 @@
 import Designer from 'Core/designer';
-import {DATA, moveFuncArgs, POS} from 'Interfaces';
-import {getMatrix, isNumberInRange} from 'Utils/utils';
+import {moveFuncArgs} from 'Interfaces';
 import Player from 'Core/player';
 import {
-    BOMB_ID, BOMB_ID_2,
-    BRICK_ID,
-    FIRE_ID, FIRE_ON_BRICK_ID, FIRE_ON_WALL_ID,
-    HEIGHT, LAVA_ID, MAKE_NUCLEAR,
-    PLAYER_ID,
-    SECOND_PLAYER_ID,
-    STATIC_MAP,
+    EMPTY_MAP_INDEX, MAPS,
+    PLAYER_1_ID,
+    PLAYER_2_ID,
     TEXT,
-    WALL_ID,
-    WIDTH
 } from 'Constants';
 import Bomb from 'Core/bomb';
 import Data from 'Core/data';
+import {getInitPosByPlayerId} from 'Utils/utils';
 
 
 class SV {
@@ -23,14 +17,10 @@ class SV {
     private gameOver = true;
     private multiplayer = false;
     private players: Array<Player> = [];
+    private map_index: number;
 
     constructor() {
         this.config();
-        this.designer = new Designer({
-            onKeyPress: this.handleKeyPress.bind(this),
-            onBtnClick: this.handleStartButtonClick.bind(this),
-            onPlayersBtnClick: this.handlePlayersButtonClick.bind(this),
-        });
         this.initPlayers();
         this.rerender();
     }
@@ -84,6 +74,13 @@ class SV {
     }
 
     private config(): void {
+        this.map_index = EMPTY_MAP_INDEX;
+        this.designer = new Designer({
+            onKeyPress: this.handleKeyPress.bind(this),
+            onBtnClick: this.handleStartButtonClick.bind(this),
+            onPlayersBtnClick: this.handlePlayersButtonClick.bind(this),
+            onMapsBtnClick: this.handleMapsButtonClick.bind(this),
+        });
         this.initMap();
         Player.rerender = Bomb.rerender = this.rerender.bind(this);
         Bomb.killPlayer = this.killPlayer.bind(this);
@@ -122,12 +119,29 @@ class SV {
         this.rerender();
     }
 
+    private handleMapsButtonClick(): void {
+        if (!this.gameOver) return;
+        this.map_index++;
+        if (this.map_index === MAPS.length) {
+            this.map_index = 0;
+        }
+        this.designer.toggleMapsButtonStyle(this.map_index);
+        this.initMap();
+    }
+
     private initPlayers(): void {
         this.initMap();
-        this.players = [new Player(PLAYER_ID, {killPlayer: this.killPlayer.bind(this)})];
+        this.players = [new Player(PLAYER_1_ID, {killPlayer: this.killPlayer.bind(this)})];
         if (this.multiplayer) {
-            this.players.push(new Player(SECOND_PLAYER_ID, {killPlayer: this.killPlayer.bind(this)}));
+            this.players.push(new Player(PLAYER_2_ID, {killPlayer: this.killPlayer.bind(this)}));
         }
+    }
+
+    private renderPlayers(): void {
+        this.players.forEach(p => {
+            p.pos = getInitPosByPlayerId(p.id);
+            p.setSelf();
+        })
     }
 
     private rerender() {
@@ -135,21 +149,10 @@ class SV {
     }
 
     private initMap() {
-        Data.data = JSON.parse(JSON.stringify(STATIC_MAP))
-    }
-
-    public static canPlace(what: number, pos: POS, data: DATA): boolean {
-        let arr: Array<number>;
-        switch (what) {
-        case SECOND_PLAYER_ID:
-        case PLAYER_ID: arr = [PLAYER_ID, SECOND_PLAYER_ID, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
-        case FIRE_ID:   arr = [WALL_ID, LAVA_ID]; break;
-        case MAKE_NUCLEAR:   arr = [LAVA_ID]; break;
-        }
-
-        return isNumberInRange(pos.row, 0, HEIGHT-1)
-            && isNumberInRange(pos.col, 0, WIDTH-1)
-            && !arr.includes(data[pos.row][pos.col]);
+        Data.setData(this.map_index);
+        this.designer.initTable();
+        this.renderPlayers();
+        this.rerender();
     }
 }
 

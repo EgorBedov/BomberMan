@@ -1,10 +1,12 @@
-import {WIDTH, HEIGHT, TEXT} from 'Constants';
+import {BASE_SELECTOR, TEXT} from 'Constants';
 import Data from 'Core/data';
+import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
 
 type IProps = {
     onBtnClick: () => void,
     onKeyPress: (ev: KeyboardEvent) => void,
     onPlayersBtnClick: () => void,
+    onMapsBtnClick: () => void,
 };
 
 class Designer {
@@ -12,6 +14,7 @@ class Designer {
     private props: IProps;
     private button: HTMLButtonElement;
     private playersButtons: HTMLButtonElement;
+    private mapsButton: HTMLButtonElement;
 
     constructor(props: IProps) {
         this.table = null;
@@ -21,35 +24,50 @@ class Designer {
     }
 
     public init(): void {
-        const app = document.querySelector('#application');
+        const app = document.querySelector(BASE_SELECTOR);
         this.button = app.querySelector('.button_start');
         this.button.addEventListener('click', this.handleStartButtonClick.bind(this));
 
+        this.mapsButton = app.querySelector('.button_map');
+        this.mapsButton.addEventListener('click', this.handleMapsButtonClick.bind(this));
+
         this.playersButtons = app.querySelector('.button_players');
         this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this))
-
-        this.table = app.insertAdjacentElement('beforeend', Designer.createTable()) as HTMLTableElement;
-        document.body.addEventListener('keydown', this.props.onKeyPress);
-        document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this))
     }
 
-    private static createTable(): HTMLTableElement {
-        const elem = document.createElement('table');
+    public initTable(): void {
+        this.table = document.querySelector('.base') as HTMLTableElement;
+        removeAllChildrenFrom(this.table);
+        this.createTableIn(this.table);
+        this.table.style.width = (Data.width*40).toString() + 'px';
+        document.body.addEventListener('keydown', this.props.onKeyPress);
+        // document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this));
+    }
+
+    private createTableIn(elem: HTMLTableElement): void {
         elem.className = 'base';
-        for (let iii = 0; iii < HEIGHT; iii++) {
+        for (let iii = 0; iii < Data.height; iii++) {
             const newRow = document.createElement('tr');
-            for (let jjj = 0; jjj < WIDTH; jjj++) {
+            for (let jjj = 0; jjj < Data.width; jjj++) {
                 newRow.appendChild(document.createElement('td'));
             }
             elem.appendChild(newRow);
         }
-        return elem;
     }
 
     private static createButton(): HTMLElement {
         const elem = document.createElement('button');
         elem.className = 'button';
         return elem;
+    }
+
+    private handleMapsButtonClick(): void {
+        this.mapsButton.blur();
+        this.props.onMapsBtnClick();
+    }
+
+    public toggleMapsButtonStyle(id: number) : void {
+        this.mapsButton.innerText = id.toString();
     }
 
     private handleStartButtonClick(): void {
@@ -79,9 +97,9 @@ class Designer {
     public updateCanvas(): void {
         const d = Data.data;
         const rows = this.table.rows;
-        for (let iii = 0; iii < HEIGHT; iii++) {
+        for (let iii = 0; iii < Data.height; iii++) {
             const row = rows.item(iii);
-            for (let jjj = 0; jjj < WIDTH; jjj++) {
+            for (let jjj = 0; jjj < Data.width; jjj++) {
                 row.cells.item(jjj).className = `cell cell_${d[iii][jjj]}`;
             }
         }

@@ -1,8 +1,7 @@
 import {moveFuncArgs, POS} from 'Interfaces';
 import {ADD_BOMB, ADD_POWER, BOMB_ID, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
-import SV from 'Core/supervisor';
 import {
-    getBombIdByPlayer,
+    canPlace,
     getBombOnPLayerIdByPlayerId,
     getFireOnPlayerIdByPlayerId,
     getInitPosByPlayerId
@@ -18,7 +17,7 @@ type IProps = {
 export default class Player {
     public static rerender: () => void;
 
-    private pos: POS;
+    public pos: POS;
     public bombsLeft: number;
     private power: PowerType;
     private props: IProps;
@@ -44,7 +43,7 @@ export default class Player {
         this.setSelf();
     }
 
-    private setSelf(): void {
+    public setSelf(): void {
         if (Data.data[this.pos.row][this.pos.col] === BOMB_ID) {
             Data.data[this.pos.row][this.pos.col] = this.bomb_icon_id;
         } else {
@@ -70,7 +69,7 @@ export default class Player {
         case 'right':   col++;   break;
         }
 
-        if (SV.canPlace(this.id, {row, col}, Data.data)) {
+        if (canPlace(this.id, {row, col}, Data.data)) {
             this.pos = {row, col};
         } else {
             this.setSelf();
