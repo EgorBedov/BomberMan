@@ -92,7 +92,7 @@ export default class Player {
     }
 
     public plantBomb(): void {
-        if (this.bombsLeft > 0) {
+        if (this.alive && this.bombsLeft > 0) {
             new Bomb(this, {...this.pos}, this.power);
         }
     }

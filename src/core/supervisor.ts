@@ -65,11 +65,13 @@ class SV {
     public endGame(): void {
         this.gameOver = true;
         this.stopEnemies();
+        this.designer.toggleStartButtonStyle(this.gameOver);
     }
 
     public start(): void {
         this.gameOver = false;
         this.enemies.forEach(e => {e.start();});
+        this.designer.toggleStartButtonStyle(this.gameOver);
     }
 
     private config(): void {
@@ -96,15 +98,18 @@ class SV {
         let players_alive = 0;
         this.players.forEach(p => {if (p.alive) players_alive++;});
         if (this.multiplayer) {
-            if (players_alive + enemies_alive === 1) {
-                alert(this.players.find((p) => p.alive === true).id + TEXT.YOU_WIN);
+            if (players_alive === 1 && enemies_alive === 0) {
+                this.designer.showEndMessage(this.players.find((p) => p.alive === true).id + TEXT.YOU_WIN);
+                this.endGame();
+            } else if (players_alive === 0 && enemies_alive > 0) {
+                this.designer.showEndMessage('PHP wins!')
                 this.endGame();
             }
         } else if (players_alive === 0) {
-            alert('Игрок номер ' + this.players.find((p) => p.id === player_id).id + TEXT.YOU_LOST);
+            this.designer.showEndMessage('Игрок номер ' + this.players.find((p) => p.id === player_id).id + TEXT.YOU_LOST);
             this.endGame();
         } else if (enemies_alive === 0) {
-            alert(this.players.find((p) => p.alive === true).id + TEXT.YOU_WIN);
+            this.designer.showEndMessage(this.players.find((p) => p.alive === true).id + TEXT.YOU_WIN);
             this.endGame();
         }
     }
@@ -116,7 +121,6 @@ class SV {
         } else {
             this.endGame();
         }
-        this.designer.toggleStartButtonStyle(this.gameOver);
         this.renderAll();
     }
 

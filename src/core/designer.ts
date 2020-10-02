@@ -17,6 +17,7 @@ class Designer {
     private playersButtons: HTMLButtonElement;
     private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
+    private cells: any[];
 
     constructor(props: IProps) {
         this.table = null;
@@ -46,6 +47,12 @@ class Designer {
         this.createTableIn(this.table);
         this.table.style.width = (Data.width*40).toString() + 'px';
         document.body.addEventListener('keydown', this.props.onKeyPress);
+
+        const rows = this.table.querySelectorAll('tr');
+        this.cells = [];
+        for (let iii = 0; iii < rows.length; iii++) {
+            this.cells.push(rows[iii].querySelectorAll('td'));
+        }
         // document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this));
     }
 
@@ -105,16 +112,23 @@ class Designer {
 
     public updateCanvas(): void {
         const d = Data.data;
-        const rows = this.table.rows;
         let value = 0;
         for (let iii = 0; iii < Data.height; iii++) {
-            const row = rows.item(iii);
             for (let jjj = 0; jjj < Data.width; jjj++) {
                 value = d[iii][jjj];
                 if (ENEMIES_IDS.includes(value)) value = ENEMY_ID;
-                row.cells.item(jjj).className = `cell cell_${value}`;
+                this.cells[iii][jjj].className = `cell cell_${value}`;
             }
         }
+    }
+
+    public showEndMessage(msg: string): void {
+        document.body.insertAdjacentHTML('beforeend', '<div class="end_message__container"><p class="end_message">'+msg+'</p></div>');
+        setTimeout(() => {this.removeEndMessage();}, 1500);
+    }
+
+    private removeEndMessage(): void {
+        document.body.querySelector('.end_message__container').remove();
     }
 }
 
