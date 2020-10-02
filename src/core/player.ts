@@ -1,5 +1,5 @@
 import {moveFuncArgs, POS} from 'Interfaces';
-import {ADD_BOMB, ADD_POWER, BOMB_ID, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
+import {ADD_BOMB, ADD_POWER, BOMB_ID, ENEMY_ID, FIRE_ID, MAKE_NUCLEAR, PLAYER_IDS} from 'Constants';
 import {
     canPlace,
     getBombOnPLayerIdByPlayerId,
@@ -10,40 +10,34 @@ import Data from 'Core/data';
 import Bomb from 'Core/bomb';
 
 type PowerType = number;
-type IProps = {
-    killPlayer: (player_id: number) => void,
-}
 
 export default class Player {
     public static rerender: () => void;
+    public static killPlayer: (player_id: number) => void;
 
+    public readonly id: number;
     public pos: POS;
-    public bombsLeft: number;
-    private power: PowerType;
-    private props: IProps;
-    readonly id: number;
-    private readonly fire_icon_id: number;
-    private readonly bomb_icon_id: number;
-    alive: boolean;
+    public bombsLeft = 1;
+    public alive: boolean;
     public abilities = {
         nuclear: false,
         slow: false,
     };
 
-    constructor(id: number, props: IProps) {
+    private readonly fire_icon_id: number;
+    private readonly bomb_icon_id: number;
+    private power: PowerType = 2;
+
+    constructor(id: number) {
         this.id = id;
         this.alive = true;
         this.fire_icon_id = getFireOnPlayerIdByPlayerId(this.id);
         this.bomb_icon_id = getBombOnPLayerIdByPlayerId(this.id);
         this.pos = getInitPosByPlayerId(this.id);
-        this.bombsLeft = 1;
-        this.power = 2;
-        this.props = props;
-
-        this.setSelf();
     }
 
     public setSelf(): void {
+        if (!this.alive) return;
         if (Data.data[this.pos.row][this.pos.col] === BOMB_ID) {
             Data.data[this.pos.row][this.pos.col] = this.bomb_icon_id;
         } else {
@@ -60,6 +54,7 @@ export default class Player {
     }
 
     public move(where: moveFuncArgs): void {
+        if (!this.alive) return;
         let {row, col} = this.pos;
         this.clearPlace();
         switch (where) {
@@ -79,7 +74,7 @@ export default class Player {
         case FIRE_ID:
             Data.data[row][col] = this.fire_icon_id;
             Player.rerender();
-            this.props.killPlayer(this.id);
+            Player.killPlayer(this.id);
             return;
         case ADD_BOMB:
             this.bombsLeft++;

@@ -1,15 +1,31 @@
 import {
-    ADD_BOMB, ADD_POWER, BASIC_MAP_INDEX,
-    BOMB_ID, BOMB_ID_2,
+    ADD_BOMB,
+    ADD_POWER,
+    BASIC_MAP_INDEX,
+    BOMB_ID,
+    BOMB_ID_2, BOMB_ON_ENEMY_ID,
     BOMB_ON_PLAYER_1_ID,
-    BOMB_ON_PLAYER_2_ID, BRICK_ID, CIRCLE_MAP_INDEX, EMPTY_MAP_INDEX, FIRE_ID, FIRE_ON_BRICK_ID,
-    FIRE_ON_PLAYER_1_ID, FIRE_ON_PLAYER_2_ID, FIRE_ON_WALL_ID, LAVA_ID,
-    MAKE_NUCLEAR, NO_BLOCK_ID,
+    BOMB_ON_PLAYER_2_ID,
+    BRICK_ID,
+    CIRCLE_MAP_INDEX,
+    EMPTY_MAP_INDEX, ENEMIES_IDS,
+    ENEMY_ID,
+    FIRE_ID,
+    FIRE_ON_BRICK_ID,
+    FIRE_ON_ENEMY_ID,
+    FIRE_ON_PLAYER_1_ID,
+    FIRE_ON_PLAYER_2_ID,
+    FIRE_ON_WALL_ID,
+    LAVA_ID,
+    MAKE_NUCLEAR,
+    NO_BLOCK_ID,
     PLAYER_1_ID,
-    PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, WALL_ID,
+    PLAYER_2_ID,
+    PLAYER_3_ID,
+    PLAYER_4_ID, PLAYER_IDS,
+    WALL_ID,
 } from 'Constants';
 import {DATA, POS} from 'Interfaces';
-import Player from 'Core/player';
 import Data from 'Core/data';
 
 
@@ -18,31 +34,31 @@ export const isNumberInRange = function(num: number, min: number, max: number): 
 }
 
 export const getBombOnPLayerIdByPlayerId = function(player_id: number): number {
-    switch (player_id) {
-    case PLAYER_1_ID: return BOMB_ON_PLAYER_1_ID;
-    case PLAYER_2_ID: return BOMB_ON_PLAYER_2_ID;
-    }
-}
-
-export const getBombIdByPlayer = function(p: Player): number {
-    switch (p.id) {
-    case PLAYER_1_ID: return BOMB_ID;
-    case PLAYER_2_ID: return BOMB_ID_2;
+    switch (true) {
+    case player_id === PLAYER_1_ID: return BOMB_ON_PLAYER_1_ID;
+    case player_id === PLAYER_2_ID: return BOMB_ON_PLAYER_2_ID;
+    case ENEMIES_IDS.includes(player_id):
+    case player_id === ENEMY_ID: return BOMB_ON_ENEMY_ID;
+    default: return BOMB_ID;
     }
 }
 
 export const getFireOnPlayerIdByPlayerId = function(player_id: number): number {
-    switch (player_id) {
-    case PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
-    case PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
+    switch (true) {
+    case player_id === PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
+    case player_id === PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
+    case ENEMIES_IDS.includes(player_id):
+    case player_id === ENEMY_ID: return FIRE_ON_ENEMY_ID;
     default: return 0;
     }
 }
 
 export const getFireOnPlayerIdBy = function(id: number): number {
-    switch (id) {
-    case BOMB_ON_PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
-    case BOMB_ON_PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
+    switch (true) {
+    case id === BOMB_ON_PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
+    case id === BOMB_ON_PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
+    case ENEMIES_IDS.includes(id):
+    case id === BOMB_ON_ENEMY_ID: return FIRE_ON_ENEMY_ID;
     default: return getFireOnPlayerIdByPlayerId(id);
     }
 }
@@ -66,6 +82,30 @@ export const getInitPosByPlayerId = function(player_id: number): POS {
         case PLAYER_4_ID: return {row: Data.height-1-3, col: Data.width-1-3};
         }
         break;
+    default: return {row: 0, col: 0};
+    }
+}
+
+export const getInitEnemyPosBy = function(index: number): POS {
+    switch (Data.map_id) {
+    case EMPTY_MAP_INDEX:
+    case BASIC_MAP_INDEX:
+        switch (index) {
+        // case 0: return {row: 0, col: 0};
+        case 1: return {row: 0, col: Data.width-1};
+        case 2: return {row: Data.height-1, col: 0};
+        case 3: return {row: Data.height-1, col: Data.width-1};
+        }
+        break;
+    case CIRCLE_MAP_INDEX:
+        switch (index) {
+        // case 0: return {row: 3, col: 3};
+        case 1: return {row: 3, col: Data.width-1-3};
+        case 2: return {row: Data.height-1-3, col: 3};
+        case 3: return {row: Data.height-1-3, col: Data.width-1-3};
+        }
+        break;
+    default: return {row: 0, col: 0};
     }
 }
 
@@ -77,7 +117,9 @@ export function getPlayerId(id: number): number {
     case PLAYER_2_ID:
     case BOMB_ON_PLAYER_2_ID:
     case FIRE_ON_PLAYER_2_ID: return PLAYER_2_ID;
-    default: return 0;
+    case BOMB_ON_ENEMY_ID:
+    case FIRE_ON_ENEMY_ID:
+    default: return id;
     }
 }
 
@@ -100,7 +142,7 @@ export function canPlace(what: number, pos: POS, data: DATA): boolean {
     let arr: Array<number>;
     switch (what) {
     case PLAYER_2_ID:
-    case PLAYER_1_ID: arr = [NO_BLOCK_ID, PLAYER_1_ID, PLAYER_2_ID, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
+    case PLAYER_1_ID: arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID]; break;
     case FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
     case MAKE_NUCLEAR:   arr = [NO_BLOCK_ID, LAVA_ID]; break;
     }

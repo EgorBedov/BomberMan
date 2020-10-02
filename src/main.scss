@@ -40,7 +40,6 @@ body {
   background-repeat: no-repeat;
   background-position: center;
 
-  &_1 { background-image: url('~Static/icons/js.svg'); }
   &_2 { background-image: url('~Static/icons/bomb.svg'); }
   &_3 { background: blue; }
   &_4 { background: saddlebrown; }
@@ -58,6 +57,10 @@ body {
   &_16 { background: saddlebrown url('~Static/icons/fire.svg') center no-repeat; }
   &_17 { background: blue url('~Static/icons/fire.svg') center no-repeat; }
   &_18 { background-image: url('~Static/icons/ts.svg'); }
+  &_21 { background-image: url('~Static/icons/php.svg'); }
+  &_22 { background-image: url('~Static/icons/php+fire.svg'); }
+  &_23 { background-image: url('~Static/icons/php+bomb.svg'); }
+  &_24 { background-image: url('~Static/icons/js.svg'); }
 }
 
 .menu {
@@ -70,6 +73,11 @@ body {
     flex-flow: row;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+
+    button {
+      margin-left: 20px;
+    }
 
     p {
       font-size: 14px;

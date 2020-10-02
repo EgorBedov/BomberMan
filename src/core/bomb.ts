@@ -1,12 +1,11 @@
 import {FireArea, POS} from 'Interfaces';
 import {
-    BRICK_ID,
+    BRICK_ID, WALL_ID,
     FIRE_ID, FIRE_ON_BRICK_ID, FIRE_ON_WALL_ID, MAKE_NUCLEAR,
-    PLAYERS_ON_MAP, WALL_ID,
+    PLAYERS_ON_MAP,
 } from 'Constants';
 import {
     canPlace,
-    getBombIdByPlayer,
     getBombOnPLayerIdByPlayerId, getBonus,
     getFireOnPlayerIdBy,
     getPlayerId
@@ -22,11 +21,9 @@ class Bomb {
     private readonly pos: { col: number; row: number };
     private readonly power: number;
     private readonly player: Player;
-    private readonly icon_id: number;
 
     constructor(player: Player, pos: POS, power: number) {
         this.player = player;
-        this.icon_id = getBombIdByPlayer(player);
         this.pos = {...pos};
         this.power = power;
         Data.data[pos.row][pos.col] = getBombOnPLayerIdByPlayerId(this.player.id);
@@ -57,13 +54,13 @@ class Bomb {
             }
         }
 
-        let player_killed = 0;
+        const players_killed = [];
         fire.forEach((fire_pos) => {
             let new_value = FIRE_ID;
             const old_value = Data.data[fire_pos.row][fire_pos.col];
             if (PLAYERS_ON_MAP.includes(old_value)) {
                 new_value = getFireOnPlayerIdBy(old_value);
-                player_killed = getPlayerId(old_value);
+                players_killed.push(getPlayerId(old_value));
             } else if (old_value === BRICK_ID) {
                 new_value = FIRE_ON_BRICK_ID
             } else if (nuclear && old_value === WALL_ID) {
@@ -73,11 +70,8 @@ class Bomb {
         });
         Bomb.rerender();
         this.player.bombsLeft++;
-        if (player_killed) {
-            Bomb.killPlayer(player_killed);
-        } else {
-            setTimeout(() => {this.endBoom(fire);}, 1000);
-        }
+        players_killed.forEach(p => Bomb.killPlayer(p));
+        setTimeout(() => {this.endBoom(fire);}, 1000);
     }
 
     private endBoom(fire: FireArea): void {

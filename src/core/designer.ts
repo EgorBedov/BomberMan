@@ -1,4 +1,4 @@
-import {BASE_SELECTOR, TEXT} from 'Constants';
+import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT} from 'Constants';
 import Data from 'Core/data';
 import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
 
@@ -7,6 +7,7 @@ type IProps = {
     onKeyPress: (ev: KeyboardEvent) => void,
     onPlayersBtnClick: () => void,
     onMapsBtnClick: () => void,
+    onEnemiesBtnClick: () => void,
 };
 
 class Designer {
@@ -15,6 +16,7 @@ class Designer {
     private button: HTMLButtonElement;
     private playersButtons: HTMLButtonElement;
     private mapsButton: HTMLButtonElement;
+    private enemiesButton: HTMLButtonElement;
 
     constructor(props: IProps) {
         this.table = null;
@@ -32,7 +34,10 @@ class Designer {
         this.mapsButton.addEventListener('click', this.handleMapsButtonClick.bind(this));
 
         this.playersButtons = app.querySelector('.button_players');
-        this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this))
+        this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this));
+
+        this.enemiesButton = app.querySelector('.button_enemies');
+        this.enemiesButton.addEventListener('click', this.handleEnemiesButtonClick.bind(this))
     }
 
     public initTable(): void {
@@ -61,6 +66,11 @@ class Designer {
         return elem;
     }
 
+    private handleEnemiesButtonClick(): void {
+        this.mapsButton.blur();
+        this.props.onEnemiesBtnClick();
+    }
+
     private handleMapsButtonClick(): void {
         this.mapsButton.blur();
         this.props.onMapsBtnClick();
@@ -80,6 +90,10 @@ class Designer {
         this.props.onPlayersBtnClick();
     }
 
+    public toggleEnemiesButtonStyle(withEnemies: boolean) : void {
+        this.enemiesButton.innerText = withEnemies ? 'Да' : 'Нет';
+    }
+
     public togglePlayersButtonStyle() : void {
         this.playersButtons.innerText = this.playersButtons.innerText === '1' ? '2' : '1';
     }
@@ -97,10 +111,13 @@ class Designer {
     public updateCanvas(): void {
         const d = Data.data;
         const rows = this.table.rows;
+        let value = 0;
         for (let iii = 0; iii < Data.height; iii++) {
             const row = rows.item(iii);
             for (let jjj = 0; jjj < Data.width; jjj++) {
-                row.cells.item(jjj).className = `cell cell_${d[iii][jjj]}`;
+                value = d[iii][jjj];
+                if (ENEMIES_IDS.includes(value)) value = ENEMY_ID;
+                row.cells.item(jjj).className = `cell cell_${value}`;
             }
         }
     }

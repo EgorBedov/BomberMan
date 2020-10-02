@@ -2,7 +2,6 @@ import {DATA} from 'Interfaces';
 
 export const BASE_SELECTOR = '#application';
 
-export const PLAYER_1_ID = 1;
 export const BOMB_ID = 2;
 export const WALL_ID = 3;
 export const BRICK_ID = 4;
@@ -22,9 +21,21 @@ export const FIRE_ON_WALL_ID = 17;
 export const PLAYER_2_ID = 18;
 export const PLAYER_3_ID = 19;
 export const PLAYER_4_ID = 20;
+export const ENEMY_ID = 21;
+export const FIRE_ON_ENEMY_ID = 22;
+export const BOMB_ON_ENEMY_ID = 23;
+export const PLAYER_1_ID = 24;
 
-export const PLAYER_IDS = [PLAYER_1_ID, PLAYER_2_ID];
-export const PLAYERS_ON_MAP = [...PLAYER_IDS, BOMB_ON_PLAYER_1_ID, BOMB_ON_PLAYER_2_ID];
+export const BIGGEST_ID = 100;
+
+export const ENEMIES_IDS = [];
+export const MAX_ENEMIES = 5;
+export const MAX_PLAYERS = 4;
+for (let iii = BIGGEST_ID; iii < MAX_ENEMIES+BIGGEST_ID; iii++) ENEMIES_IDS.push(iii);
+
+export const PLAYER_IDS = [PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID];
+export const PLAYERS_ON_MAP = [...PLAYER_IDS, ...ENEMIES_IDS, BOMB_ON_PLAYER_1_ID, BOMB_ON_PLAYER_2_ID, ENEMY_ID];
+
 
 export const EMPTY_MAP : DATA = [
     [0, 0, 0, 0, 0],
