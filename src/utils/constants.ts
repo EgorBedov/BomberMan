@@ -25,6 +25,7 @@ export const ENEMY_ID = 21;
 export const FIRE_ON_ENEMY_ID = 22;
 export const BOMB_ON_ENEMY_ID = 23;
 export const PLAYER_1_ID = 24;
+export const ADD_SPEED = 25;
 
 export const BIGGEST_ID = 100;
 

@@ -1,5 +1,5 @@
 import {POS} from 'Interfaces';
-import {ADD_BOMB, ADD_POWER, BOMB_ID, DIRECTIONS, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
+import {ADD_BOMB, ADD_POWER, ADD_SPEED, BOMB_ID, DIRECTIONS, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
 import {
     canPlace,
     getBombOnPLayerIdByPlayerId,
@@ -23,6 +23,8 @@ export default class Player {
         nuclear: false,
         slow: false,
     };
+    private delay = 500;
+    private canMove: boolean;
 
     private readonly fire_icon_id: number;
     private readonly bomb_icon_id: number;
@@ -31,6 +33,7 @@ export default class Player {
     constructor(id: number) {
         this.id = id;
         this.alive = true;
+        this.canMove = true;
         this.fire_icon_id = getFireOnPlayerIdByPlayerId(this.id);
         this.bomb_icon_id = getBombOnPLayerIdByPlayerId(this.id);
         this.pos = getInitPosByPlayerId(this.id);
@@ -56,6 +59,8 @@ export default class Player {
 
     public move(where: string): boolean {
         if (!this.alive) return false;
+        if (!this.canMove) return false;
+        const timeout = this.disableMoves();
         let {row, col} = this.pos;
         this.clearPlace();
         switch (where) {
@@ -69,6 +74,8 @@ export default class Player {
             this.pos = {row, col};
         } else {
             this.setSelf();
+            clearTimeout(timeout);
+            this.enableMoves();
             return false;
         }
         switch (Data.data[this.pos.row][this.pos.col]) {
@@ -83,12 +90,24 @@ export default class Player {
         case ADD_POWER:
             this.power++;
             break;
+        case ADD_SPEED:
+            this.delay /= 1.25;
+            break;
         case MAKE_NUCLEAR:
             this.abilities.nuclear = true;
             break;
         }
         this.setSelf();
         return true;
+    }
+
+    private disableMoves(): NodeJS.Timeout {
+        this.canMove = false;
+        return setTimeout(() => {this.enableMoves();}, this.delay);
+    }
+
+    private enableMoves(): void {
+        this.canMove = true;
     }
 
     public plantBomb(): void {

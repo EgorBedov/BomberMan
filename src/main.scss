@@ -62,6 +62,7 @@ body {
   &_22 { background-image: url('~Static/icons/php+fire.svg'); }
   &_23 { background-image: url('~Static/icons/php+bomb.svg'); }
   &_24 { background-image: url('~Static/icons/js.svg'); }
+  &_25 { background-image: url('~Static/icons/redux.svg'); }
 }
 
 .menu {
@@ -81,6 +82,7 @@ body {
     }
 
     p {
+      color: whitesmoke;
       font-size: 14px;
     }
   }

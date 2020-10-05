@@ -1,6 +1,6 @@
 import {
     ADD_BOMB,
-    ADD_POWER,
+    ADD_POWER, ADD_SPEED,
     BASIC_MAP_INDEX,
     BOMB_ID,
     BOMB_ID_2, BOMB_ON_ENEMY_ID,
@@ -129,6 +129,8 @@ export function getBonus(): number {
     case 5: return ADD_BOMB;
     case 6:
     case 7: return ADD_POWER;
+    case 8:
+    case 9: return ADD_SPEED;
     case 10: return MAKE_NUCLEAR;
     default: return 0;
     }
@@ -144,7 +146,7 @@ export function canPlace(what: number, pos: POS, data: DATA): boolean {
     case what === ENEMY_ID:
     case ENEMIES_IDS.includes(what):
     case PLAYER_IDS.includes(what):
-        arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID];
+        arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, BOMB_ON_ENEMY_ID, BOMB_ON_PLAYER_1_ID, BOMB_ON_PLAYER_2_ID, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID];
         if (ENEMIES_IDS.includes(what)) arr.push(FIRE_ID);
         break;
     case what === FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
