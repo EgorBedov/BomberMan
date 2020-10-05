@@ -113,5 +113,11 @@ export const TEXT = {
     YOU_WIN: 'Вы выиграли',
 };
 
-// DO NOT CHANGE IT
-export const DIRECTIONS = ['up', 'down', 'left', 'right'];
+export const UP = 1;
+export const DOWN = 2;
+export const LEFT = 3;
+export const RIGHT = 4;
+
+export const DIRECTIONS = [UP, DOWN, LEFT, RIGHT];
+
+export type moveHandlerArgument = typeof UP | typeof DOWN | typeof LEFT | typeof RIGHT;

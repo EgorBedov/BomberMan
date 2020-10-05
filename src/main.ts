@@ -1,4 +1,5 @@
 import './main.scss';
 import SV from 'Core/supervisor';
 
-new SV();
+const sv = new SV();
+sv.gameLoop(0);

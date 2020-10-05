@@ -5,16 +5,20 @@ import {buttonHandlerArgument} from 'Interfaces';
 
 type IProps = {
     onKeyPress: (ev: KeyboardEvent) => void,
+    onKeyUp: (ev: KeyboardEvent) => void,
     onButtonClick: (type: buttonHandlerArgument) => void,
 };
 
 class Designer {
+    public static ctx: CanvasRenderingContext2D;
+
     private table: HTMLTableElement;
     private props: IProps;
     private button: HTMLButtonElement;
     private playersButton: HTMLButtonElement;
     private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
+    private canvas: HTMLCanvasElement;
     private cells: any[];
 
     constructor(props: IProps) {
@@ -30,9 +34,23 @@ class Designer {
         this.mapsButton = app.querySelector('.button_map');
         this.playersButton = app.querySelector('.button_players');
         this.enemiesButton = app.querySelector('.button_enemies');
+        this.canvas = app.querySelector('#canvas');
+        Designer.ctx = this.canvas.getContext('2d');
 
         [this.button, this.mapsButton, this.playersButton, this.enemiesButton]
-            .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)))
+            .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)));
+
+        document.addEventListener('keyup', (ev) => {this.props.onKeyUp(ev);});
+    }
+
+    public updateCanvas(): void {
+        Designer.ctx.clearRect(0, 0, Data.width * 40, Data.height * 40);
+    }
+
+    public initCanvas(): void {
+        this.canvas.width = Data.width * 40;
+        this.canvas.height = Data.height * 40;
+        this.updateCanvas();
     }
 
     public initTable(): void {
@@ -89,7 +107,7 @@ class Designer {
         }
     }
 
-    public updateCanvas(): void {
+    public updateTable(): void {
         const d = Data.data;
         let value = 0;
         for (let iii = 0; iii < Data.height; iii++) {

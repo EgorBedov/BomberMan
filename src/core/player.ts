@@ -1,11 +1,16 @@
 import {POS} from 'Interfaces';
-import {ADD_BOMB, ADD_POWER, ADD_SPEED, BOMB_ID, DIRECTIONS, FIRE_ID, MAKE_NUCLEAR} from 'Constants';
 import {
-    canPlace,
-    getBombOnPLayerIdByPlayerId,
-    getFireOnPlayerIdByPlayerId,
-    getInitPosByPlayerId
-} from 'Utils/utils';
+    ADD_BOMB,
+    ADD_POWER,
+    ADD_SPEED,
+    BOMB_ID,
+    DOWN,
+    FIRE_ID, LEFT,
+    MAKE_NUCLEAR,
+    moveHandlerArgument,
+    RIGHT, UP
+} from 'Constants';
+import {canPlace, getBombOnPLayerIdByPlayerId, getFireOnPlayerIdByPlayerId, getInitPosByPlayerId} from 'Utils/utils';
 import Data from 'Core/data';
 import Bomb from 'Core/bomb';
 
@@ -57,17 +62,17 @@ export default class Player {
         }
     }
 
-    public move(where: string): boolean {
+    public move(where: moveHandlerArgument): boolean {
         if (!this.alive) return false;
         if (!this.canMove) return false;
         const timeout = this.disableMoves();
         let {row, col} = this.pos;
         this.clearPlace();
         switch (where) {
-        case DIRECTIONS[0]:     row--;      break;
-        case DIRECTIONS[1]:     row++;      break;
-        case DIRECTIONS[2]:     col--;      break;
-        case DIRECTIONS[3]:     col++;      break;
+        case UP:        row--;      break;
+        case DOWN:      row++;      break;
+        case LEFT:      col--;      break;
+        case RIGHT:     col++;      break;
         }
 
         if (canPlace(this.id, {row, col}, Data.data)) {

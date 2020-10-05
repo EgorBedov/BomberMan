@@ -1,7 +1,7 @@
 import Designer from 'Core/designer';
 import Player from 'Core/player';
 import {
-    DIRECTIONS,
+    DOWN, UP, LEFT, RIGHT,
     EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
     TEXT,
@@ -10,6 +10,7 @@ import Bomb from 'Core/bomb';
 import Data from 'Core/data';
 import Enemy from 'Core/enemy';
 import {buttonHandlerArgument} from 'Interfaces';
+import MovableUnit from 'Core/movable_unit';
 
 
 class SV {
@@ -20,11 +21,26 @@ class SV {
     private enemies: Array<Enemy> = [];
     private players: Array<Player> = [];
     private map_index: number;
+    public lastTime = 0;
+    private units: Array<MovableUnit> = [];
 
     constructor() {
         this.config();
         this.initAll();
         this.renderAll();
+    }
+
+    public handleKeyUp(ev: KeyboardEvent): void {
+        if (this.gameOver) return;
+
+        let where;
+        switch (ev.code) {
+        case 'KeyW':    where = UP;     break;
+        case 'KeyS':    where = DOWN;   break;
+        case 'KeyD':    where = RIGHT;  break;
+        case 'KeyA':    where = LEFT;   break;
+        }
+        this.units[0].stop(where);
     }
 
     public handleKeyPress(ev: KeyboardEvent): void {
@@ -33,21 +49,17 @@ class SV {
         let where;
         switch (ev.code) {
         case 'KeyW':
-        case 'ArrowUp':
-            where = DIRECTIONS[0];
-            break;
+        case 'ArrowUp':     where = UP;         break;
+
         case 'ArrowLeft':
-        case 'KeyA':
-            where = DIRECTIONS[2];
-            break;
+        case 'KeyA':        where = LEFT;       break;
+
         case 'ArrowRight':
-        case 'KeyD':
-            where = DIRECTIONS[3];
-            break;
+        case 'KeyD':        where = RIGHT;      break;
+
         case 'ArrowDown':
-        case 'KeyS':
-            where = DIRECTIONS[1];
-            break;
+        case 'KeyS':        where = DOWN;       break;
+
         case 'Space':
         case 'MetaLeft':
             this.players[0].plantBomb();
@@ -64,6 +76,7 @@ class SV {
             this.players[1].move(where);
         } else {
             this.players[0].move(where);
+            this.units[0].move(where);
         }
     }
 
@@ -83,6 +96,7 @@ class SV {
         this.map_index = EMPTY_MAP_INDEX;
         this.designer = new Designer({
             onKeyPress: this.handleKeyPress.bind(this),
+            onKeyUp: this.handleKeyUp.bind(this),
             onButtonClick: this.handleButtonClick.bind(this),
         });
         Player.rerender = Bomb.rerender = this.rerender.bind(this);
@@ -165,7 +179,17 @@ class SV {
     }
 
     private rerender() {
+        this.designer.updateTable();
+    }
+
+    public gameLoop(timestamp: number): void {
+        const deltaTime = timestamp - this.lastTime;
+        this.lastTime = timestamp;
+
         this.designer.updateCanvas();
+        this.units.forEach(u => {u.work(deltaTime); u.draw();});
+
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
     private initAll(): void {
@@ -176,6 +200,7 @@ class SV {
     private initMap() {
         Data.setData(this.map_index);
         this.designer.initTable();
+        this.designer.initCanvas();
         this.initPlayers();
     }
 
@@ -190,6 +215,7 @@ class SV {
     }
 
     private initPlayers(): void {
+        this.units = [new MovableUnit()];
         this.players = [new Player(PLAYER_1_ID)];
         if (this.multiplayer) {
             this.players.push(new Player(PLAYER_2_ID));

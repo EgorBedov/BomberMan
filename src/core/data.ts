@@ -33,6 +33,14 @@ class Data {
         if (!this[dataSymbol]) this[dataSymbol] = new Data(dataCreatorSymbol);
         return Data.data.length;
     }
+
+    static get game_width(): number {
+        return this.width * 40;
+    }
+
+    static get game_height(): number {
+        return this.height * 40;
+    }
 }
 
 export default Data;
