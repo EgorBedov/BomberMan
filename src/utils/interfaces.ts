@@ -12,4 +12,6 @@ export type moveFunc =  (where: string) => void;
 
 export type DATA = any;
 
+export type buttonHandlerArgument = 'maps' | 'enemies' | 'players' | 'start';
+
 export type SV_KillPlayer = () => void;

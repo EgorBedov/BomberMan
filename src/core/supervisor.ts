@@ -9,12 +9,13 @@ import {
 import Bomb from 'Core/bomb';
 import Data from 'Core/data';
 import Enemy from 'Core/enemy';
+import {buttonHandlerArgument} from 'Interfaces';
 
 
 class SV {
     private designer: Designer;
     private gameOver = true;
-    private multiplayer = false;
+    private multiplayer = 0;
     private withEnemies = false;
     private enemies: Array<Enemy> = [];
     private players: Array<Player> = [];
@@ -69,23 +70,20 @@ class SV {
     public endGame(): void {
         this.gameOver = true;
         this.stopEnemies();
-        this.designer.toggleStartButtonStyle(this.gameOver);
+        this.designer.toggleButton('start', this.gameOver);
     }
 
     public start(): void {
         this.gameOver = false;
         this.enemies.forEach(e => {e.start();});
-        this.designer.toggleStartButtonStyle(this.gameOver);
+        this.designer.toggleButton('start', this.gameOver);
     }
 
     private config(): void {
         this.map_index = EMPTY_MAP_INDEX;
         this.designer = new Designer({
             onKeyPress: this.handleKeyPress.bind(this),
-            onBtnClick: this.handleStartButtonClick.bind(this),
-            onPlayersBtnClick: this.handlePlayersButtonClick.bind(this),
-            onMapsBtnClick: this.handleMapsButtonClick.bind(this),
-            onEnemiesBtnClick: this.handleEnemiesButtonClick.bind(this),
+            onButtonClick: this.handleButtonClick.bind(this),
         });
         Player.rerender = Bomb.rerender = this.rerender.bind(this);
         Player.killPlayer = Bomb.killPlayer = this.killPlayer.bind(this);
@@ -118,39 +116,36 @@ class SV {
         }
     }
 
-    private handleStartButtonClick(): void {
-        this.initAll();
-        if (this.gameOver) {
-            this.start();
-        } else {
-            this.endGame();
+    private handleButtonClick(type: buttonHandlerArgument): void {
+        if (type === 'start') {
+            this.initAll();
+            if (this.gameOver) {
+                this.start();
+            } else {
+                this.endGame();
+            }
+            this.renderAll();
+            return;
         }
-        this.renderAll();
-    }
-
-    private handlePlayersButtonClick(): void {
         if (!this.gameOver) return;
-        this.designer.togglePlayersButtonStyle();
-        this.multiplayer = !this.multiplayer;
-        this.initAll();
-        this.renderAll();
-    }
-
-    private handleMapsButtonClick(): void {
-        if (!this.gameOver) return;
-        this.map_index++;
-        if (this.map_index === MAPS.length) {
-            this.map_index = 0;
+        switch (type) {
+        case 'enemies':
+            this.withEnemies = !this.withEnemies;
+            this.designer.toggleButton('enemies', this.withEnemies);
+            break;
+        case 'maps':
+            this.map_index++;
+            if (this.map_index === MAPS.length) {
+                this.map_index = 0;
+            }
+            this.designer.toggleButton('maps', this.map_index);
+            break;
+        case 'players':
+            this.multiplayer = this.multiplayer === 0 ? 1 : 0;
+            this.designer.toggleButton('players', this.multiplayer + 1);
+            break;
+        default: return;
         }
-        this.designer.toggleMapsButtonStyle(this.map_index);
-        this.initAll();
-        this.renderAll();
-    }
-
-    private handleEnemiesButtonClick(): void {
-        if (!this.gameOver) return;
-        this.withEnemies = !this.withEnemies;
-        this.designer.toggleEnemiesButtonStyle(this.withEnemies);
         this.initAll();
         this.renderAll();
     }

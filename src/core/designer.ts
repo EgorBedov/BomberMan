@@ -1,20 +1,18 @@
 import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT} from 'Constants';
 import Data from 'Core/data';
 import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
+import {buttonHandlerArgument} from 'Interfaces';
 
 type IProps = {
-    onBtnClick: () => void,
     onKeyPress: (ev: KeyboardEvent) => void,
-    onPlayersBtnClick: () => void,
-    onMapsBtnClick: () => void,
-    onEnemiesBtnClick: () => void,
+    onButtonClick: (type: buttonHandlerArgument) => void,
 };
 
 class Designer {
     private table: HTMLTableElement;
     private props: IProps;
     private button: HTMLButtonElement;
-    private playersButtons: HTMLButtonElement;
+    private playersButton: HTMLButtonElement;
     private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
     private cells: any[];
@@ -29,16 +27,12 @@ class Designer {
     public init(): void {
         const app = document.querySelector(BASE_SELECTOR);
         this.button = app.querySelector('.button_start');
-        this.button.addEventListener('click', this.handleStartButtonClick.bind(this));
-
         this.mapsButton = app.querySelector('.button_map');
-        this.mapsButton.addEventListener('click', this.handleMapsButtonClick.bind(this));
-
-        this.playersButtons = app.querySelector('.button_players');
-        this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this));
-
+        this.playersButton = app.querySelector('.button_players');
         this.enemiesButton = app.querySelector('.button_enemies');
-        this.enemiesButton.addEventListener('click', this.handleEnemiesButtonClick.bind(this))
+
+        [this.button, this.mapsButton, this.playersButton, this.enemiesButton]
+            .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)))
     }
 
     public initTable(): void {
@@ -73,41 +67,26 @@ class Designer {
         return elem;
     }
 
-    private handleEnemiesButtonClick(): void {
-        this.mapsButton.blur();
-        this.props.onEnemiesBtnClick();
+    private handleButtonClick(ev: Event): void {
+        const t = ev.target as HTMLButtonElement;
+        t.blur();
+        this.props.onButtonClick(t.getAttribute('data-type') as buttonHandlerArgument);
     }
 
-    private handleMapsButtonClick(): void {
-        this.mapsButton.blur();
-        this.props.onMapsBtnClick();
-    }
-
-    public toggleMapsButtonStyle(id: number) : void {
-        this.mapsButton.innerText = id.toString();
-    }
-
-    private handleStartButtonClick(): void {
-        this.button.blur();
-        this.props.onBtnClick();
-    }
-
-    private handlePlayersButtonClick(): void {
-        this.playersButtons.blur();
-        this.props.onPlayersBtnClick();
-    }
-
-    public toggleEnemiesButtonStyle(withEnemies: boolean) : void {
-        this.enemiesButton.innerText = withEnemies ? 'Да' : 'Нет';
-    }
-
-    public togglePlayersButtonStyle() : void {
-        this.playersButtons.innerText = this.playersButtons.innerText === '1' ? '2' : '1';
-    }
-
-    public toggleStartButtonStyle(gameOver: boolean): void {
-        this.button.innerText = gameOver ? TEXT.BEGIN : TEXT.END;
-        this.button.classList.toggle('button_start', gameOver);
+    public toggleButton(type: buttonHandlerArgument, arg: any): void {
+        switch (type) {
+        case 'start':
+            this.button.innerText = arg ? TEXT.BEGIN : TEXT.END;
+            this.button.classList.toggle('button_start', arg);
+            break;
+        case 'enemies':
+            this.enemiesButton.innerText = arg ? 'Да' : 'Нет';
+            break;
+        case 'players':
+        case 'maps':
+            this[`${type}Button`].innerText = arg.toString();
+            break;
+        }
     }
 
     public updateCanvas(): void {
