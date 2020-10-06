@@ -4,7 +4,7 @@ import Game from 'Core/game';
 
 
 export default class MovableUnit extends Unit {
-    private maxSpeed = 15;
+    private maxSpeed = 30;
     private speed: { x: number, y: number };
 
     constructor(g: Game) {

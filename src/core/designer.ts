@@ -2,6 +2,18 @@ import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT} from 'Constants';
 import Data from 'Core/data';
 import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
 import {buttonHandlerArgument} from 'Interfaces';
+import BombIcon from 'Static/icons/bomb.svg';
+import Player1Icon from 'Static/icons/player1.svg';
+import Player2Icon from 'Static/icons/player2.svg';
+import EnemyIcon from 'Static/icons/enemy.svg';
+import BrickIcon from 'Static/icons/brick.svg';
+import NoBrickIcon from 'Static/icons/no_brick.svg';
+import WallIcon from 'Static/icons/wall.svg';
+import FireIcon from 'Static/icons/fire.svg';
+import BombAddIcon from 'Static/icons/bomb_add.svg';
+import PowerAddIcon from 'Static/icons/power_add.svg';
+import SpeedAddIcon from 'Static/icons/speed_add.svg';
+import ErrorIcon from 'Static/icons/404.svg';
 
 type IProps = {
     onKeyPress: (ev: KeyboardEvent) => void,
@@ -10,7 +22,20 @@ type IProps = {
 };
 
 class Designer {
-    public static ctx: CanvasRenderingContext2D;
+    public static images: {
+        player1?: HTMLImageElement,
+        player2?: HTMLImageElement,
+        enemy?: HTMLImageElement,
+        brick?: HTMLImageElement,
+        wall?: HTMLImageElement,
+        no_brick?: HTMLImageElement,
+        fire?: HTMLImageElement,
+        bomb?: HTMLImageElement,
+        bomb_add?: HTMLImageElement,
+        power_add?: HTMLImageElement,
+        speed_add?: HTMLImageElement,
+        error?: HTMLImageElement,
+    } = {};
 
     private table: HTMLTableElement;
     private props: IProps;
@@ -20,37 +45,54 @@ class Designer {
     private enemiesButton: HTMLButtonElement;
     private canvas: HTMLCanvasElement;
     private cells: any[];
+    ctx: CanvasRenderingContext2D;
 
     constructor(props: IProps) {
         this.table = null;
         this.props = props;
 
-        this.init();
-    }
-
-    public init(): void {
         const app = document.querySelector(BASE_SELECTOR);
         this.button = app.querySelector('.button_start');
         this.mapsButton = app.querySelector('.button_map');
         this.playersButton = app.querySelector('.button_players');
         this.enemiesButton = app.querySelector('.button_enemies');
         this.canvas = app.querySelector('#canvas');
-        Designer.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas.getContext('2d');
 
+        // Initialize images
         [this.button, this.mapsButton, this.playersButton, this.enemiesButton]
             .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)));
 
         document.addEventListener('keyup', (ev) => {this.props.onKeyUp(ev);});
+
+        [
+            {name: 'player1', icon: Player1Icon},
+            {name: 'player2', icon: Player2Icon},
+            {name: 'enemy', icon: EnemyIcon},
+            {name: 'brick', icon: BrickIcon},
+            {name: 'wall', icon: WallIcon},
+            {name: 'no_brick', icon: NoBrickIcon},
+            {name: 'fire', icon: FireIcon},
+            {name: 'bomb', icon: BombIcon},
+            {name: 'bomb_add', icon: BombAddIcon},
+            {name: 'power_add', icon: PowerAddIcon},
+            {name: 'speed_add', icon: SpeedAddIcon},
+            {name: 'error', icon: ErrorIcon},
+        ].forEach(img => {
+            const tmp_image = new Image();
+            tmp_image.onload = () => Designer.images[img.name] = tmp_image;
+            tmp_image.src = img.icon;
+            document.body.insertAdjacentElement('beforeend', tmp_image);
+        });
     }
 
-    public updateCanvas(): void {
-        Designer.ctx.clearRect(0, 0, Data.width * 40, Data.height * 40);
+    public resizeCanvas(height: number, width: number): void {
+        this.canvas.height = height;
+        this.canvas.width = width;
     }
 
-    public initCanvas(): void {
-        this.canvas.width = Data.width * 40;
-        this.canvas.height = Data.height * 40;
-        this.updateCanvas();
+    public clearCanvas(): void {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     public initTable(): void {
@@ -77,12 +119,6 @@ class Designer {
             }
             elem.appendChild(newRow);
         }
-    }
-
-    private static createButton(): HTMLElement {
-        const elem = document.createElement('button');
-        elem.className = 'button';
-        return elem;
     }
 
     private handleButtonClick(ev: Event): void {

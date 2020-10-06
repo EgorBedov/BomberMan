@@ -1,28 +1,29 @@
-import Data from 'Core/data';
-import Designer from 'Core/designer';
+import Game from 'Core/game';
+import {ImageType, POINT} from 'Interfaces';
+import {UNIT_SIZE} from 'Constants';
 
 
 export default class Unit {
-    protected readonly w = 20;
-    protected readonly h = 20;
-    protected posi: {
-        x: number,
-        y: number,
-    };
+    protected readonly w = UNIT_SIZE;
+    protected readonly h = UNIT_SIZE;
+    protected posi: POINT;
+    protected game: Game;
+    public toRemove: boolean;
+    protected image: ImageType;
 
-    constructor() {
-        this.w = 20;
-        this.h = 20;
-        this.posi = {x: Data.game_width / 2 - this.w / 2, y: Data.game_height / 2 - this.h / 2};
+    constructor(game: Game, pos: POINT, image: ImageType = null) {
+        this.game = game;
+        this.posi = pos;
+        this.toRemove = false;
+        this.image = image;
     }
 
     public draw(): void {
-        Designer.ctx.fillStyle = '#ffffff';
-        Designer.ctx.fillRect(this.posi.x, this.posi.y, this.w, this.h);
+        this.game.designer.ctx.fillStyle = '#ffffff';
+        this.game.designer.ctx.fillRect(this.posi.x, this.posi.y, this.w, this.h);
     }
 
     public work(deltaTime: number): void {
-        if (!deltaTime) return;
         this.posi.x += 5 / deltaTime;
     }
 }

@@ -36,6 +36,7 @@ for (let iii = BIGGEST_ID; iii < MAX_ENEMIES+BIGGEST_ID; iii++) ENEMIES_IDS.push
 
 export const PLAYER_IDS = [PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID];
 export const PLAYERS_ON_MAP = [...PLAYER_IDS, ...ENEMIES_IDS, BOMB_ON_PLAYER_1_ID, BOMB_ON_PLAYER_2_ID, ENEMY_ID];
+export const OBSTACLES = [WALL_ID, BRICK_ID, NO_BLOCK_ID];
 
 
 export const EMPTY_MAP : DATA = [
@@ -121,3 +122,5 @@ export const RIGHT = 4;
 export const DIRECTIONS = [UP, DOWN, LEFT, RIGHT];
 
 export type moveHandlerArgument = typeof UP | typeof DOWN | typeof LEFT | typeof RIGHT;
+
+export const UNIT_SIZE = 40;

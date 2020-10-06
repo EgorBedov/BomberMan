@@ -4,7 +4,7 @@ import {
     DOWN, UP, LEFT, RIGHT,
     EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
-    TEXT, UNIT_SIZE, BRICK_ID, WALL_ID,
+    TEXT, UNIT_SIZE, OBSTACLES,
 } from 'Constants';
 import Bomb from 'Core/bomb';
 import Data from 'Core/data';
@@ -229,26 +229,24 @@ class Game {
 
     public draw(): void {
         this.units.forEach(u => u.draw());
+        this.obstacles.forEach(o => o.draw());
     }
 
     public buildLevel(): void {
         const map = MAPS[this.map_index];
         this.HEIGHT = map.length * UNIT_SIZE;
         this.WIDTH = map[0].length * UNIT_SIZE;
+        this.designer.resizeCanvas(this.HEIGHT, this.WIDTH);
+        this.obstacles = [];
+        this.designer.clearCanvas();
         map.forEach((row, rowIndex) => {
-            row.forEach((cell, cellindex) => {
+            row.forEach((id, idIndex) => {
+                if (!OBSTACLES.includes(id)) return;
                 const pos = {
-                    x: cellindex * UNIT_SIZE,
+                    x: idIndex * UNIT_SIZE,
                     y: rowIndex * UNIT_SIZE,
                 };
-                switch (cell) {
-                case WALL_ID:
-                    this.obstacles.push(new Obstacle(this, pos, Designer.images.wall));
-                    break;
-                case BRICK_ID:
-                    this.obstacles.push(new Obstacle(this, pos, Designer.images.brick));
-                    break;
-                }
+                this.obstacles.push(new Obstacle(this, pos, id));
             })
         });
     }
