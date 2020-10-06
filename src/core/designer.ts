@@ -3,8 +3,8 @@ import Data from 'Core/data';
 import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
 import {buttonHandlerArgument, ImageType} from 'Interfaces';
 import BombIcon from 'Static/icons/bomb.svg';
-import Player1Icon from 'Static/icons/player1.svg';
-import Player2Icon from 'Static/icons/player2.svg';
+import Player1Icon from 'Static/icons/player0.svg';
+import Player2Icon from 'Static/icons/player1.svg';
 import EnemyIcon from 'Static/icons/enemy.svg';
 import BrickIcon from 'Static/icons/brick.svg';
 import NoBrickIcon from 'Static/icons/no_brick.svg';
@@ -23,8 +23,8 @@ type IProps = {
 
 class Designer {
     public static images: {
+        player0?: ImageType,
         player1?: ImageType,
-        player2?: ImageType,
         enemy?: ImageType,
         brick?: ImageType,
         wall?: ImageType,
@@ -66,8 +66,8 @@ class Designer {
         document.addEventListener('keyup', (ev) => {this.props.onKeyUp(ev);});
 
         [
-            {name: 'player1', icon: Player1Icon},
-            {name: 'player2', icon: Player2Icon},
+            {name: 'player0', icon: Player1Icon},
+            {name: 'player1', icon: Player2Icon},
             {name: 'enemy', icon: EnemyIcon},
             {name: 'brick', icon: BrickIcon},
             {name: 'wall', icon: WallIcon},
@@ -80,13 +80,16 @@ class Designer {
             {name: 'error', icon: ErrorIcon},
         ].forEach(img => {
             const tmp_image = new Image();
+            const tmp_canvas = document.createElement('canvas');
+            tmp_canvas.width = UNIT_WIDTH;
+            tmp_canvas.height = UNIT_HEIGHT;
+            if (img.name.match(/^((player)|(enemy))/g)) {
+                tmp_canvas.width *= 0.6;
+                tmp_canvas.height *= 0.6;
+            }
+            Designer.images[img.name] = tmp_canvas;
             tmp_image.onload = () => {
-                const tmp_canvas = document.createElement('canvas');
-                tmp_canvas.width = UNIT_WIDTH;
-                tmp_canvas.height = UNIT_HEIGHT;
-                const tmp_ctx = tmp_canvas.getContext('2d');
-                tmp_ctx.drawImage(tmp_image, 0, 0);
-                Designer.images[img.name] = tmp_canvas;
+                Designer.images[img.name].getContext('2d').drawImage(tmp_image, 0, 0);
             };
             tmp_image.src = img.icon;
         });

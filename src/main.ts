@@ -8,7 +8,7 @@ function gameLoop(timestamp: number): void {
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
 
-    game.designer.ctx.clearRect(0, 0, game.WIDTH, game.HEIGHT);
+    game.designer.ctx.clearRect(0, 0, game.level.WIDTH, game.level.HEIGHT);
     game.update(deltaTime);
     game.draw();
 

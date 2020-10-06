@@ -4,7 +4,7 @@ import {
     DOWN, UP, LEFT, RIGHT,
     EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
-    TEXT, OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH,
+    TEXT, OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH, BASIC_MAP_INDEX,
 } from 'Constants';
 import Bomb from 'Core/bomb';
 import Data from 'Core/data';
@@ -13,6 +13,9 @@ import {buttonHandlerArgument} from 'Interfaces';
 import MovableUnit from 'Core/movableUnit';
 import Unit from 'Core/unit';
 import Obstacle from 'Core/obstacle';
+import PlayerNEW from 'Core/playerNEW';
+import Level from 'Core/level';
+import {_MAPS} from 'Core/levels';
 
 
 class Game {
@@ -24,9 +27,8 @@ class Game {
     private players: Array<Player> = [];
     private map_index: number;
     private units: Array<MovableUnit> = [];
-    public WIDTH: number;
-    public HEIGHT: number;
-    public obstacles: Array<Unit>;
+    public obstacles: Array<Unit> = [];
+    public level: Level;
 
     constructor() {
         this.config();
@@ -97,7 +99,8 @@ class Game {
     }
 
     private config(): void {
-        this.map_index = EMPTY_MAP_INDEX;
+        this.map_index = BASIC_MAP_INDEX;
+        this.level = new Level(_MAPS[this.map_index]);
         this.designer = new Designer({
             onKeyPress: this.handleKeyPress.bind(this),
             onKeyUp: this.handleKeyUp.bind(this),
@@ -210,7 +213,7 @@ class Game {
     }
 
     private initPlayers(): void {
-        this.units = [new MovableUnit(this)];
+        this.units = [new PlayerNEW(this, 0)];
         this.players = [new Player(PLAYER_1_ID)];
         if (this.multiplayer) {
             this.players.push(new Player(PLAYER_2_ID));
@@ -223,6 +226,7 @@ class Game {
     }
 
     public update(deltaTime: number): void {
+        if (this.gameOver) return;
         this.units.forEach(u => u.work(deltaTime));
         this.units.filter(u => !u.toRemove);
     }
@@ -233,13 +237,11 @@ class Game {
     }
 
     public buildLevel(): void {
-        const map = MAPS[this.map_index];
-        this.HEIGHT = map.length * UNIT_HEIGHT;
-        this.WIDTH = map[0].length * UNIT_WIDTH;
-        this.designer.resizeCanvas(this.HEIGHT, this.WIDTH);
         this.obstacles = [];
+        this.level = new Level(_MAPS[this.map_index]);
+        this.designer.resizeCanvas(this.level.HEIGHT, this.level.WIDTH);
         this.designer.clearCanvas();
-        map.forEach((row, rowIndex) => {
+        this.level.map.forEach((row, rowIndex) => {
             row.forEach((id, idIndex) => {
                 if (!OBSTACLES.includes(id)) return;
                 const pos = {

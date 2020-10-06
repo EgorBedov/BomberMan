@@ -4,9 +4,10 @@ import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 
 
 export default class Unit {
-    protected readonly w = UNIT_WIDTH;
-    protected readonly h = UNIT_HEIGHT;
-    protected posi: POINT;
+    // TODO: it (removed to make player smaller)
+    public /*readonly*/ w = UNIT_WIDTH;
+    public /*readonly*/ h = UNIT_HEIGHT;
+    posi: POINT;
     protected game: Game;
     public toRemove: boolean;
     protected image: ImageType;

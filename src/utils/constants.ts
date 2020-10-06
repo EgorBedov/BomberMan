@@ -121,7 +121,7 @@ export const RIGHT = 4;
 
 export const DIRECTIONS = [UP, DOWN, LEFT, RIGHT];
 
-export type moveHandlerArgument = typeof UP | typeof DOWN | typeof LEFT | typeof RIGHT;
+export type moveHandlerArgument = 1 | 2 | 3 | 4;
 
 const UNIT_SIZE = 40;
 export const UNIT_HEIGHT = UNIT_SIZE;

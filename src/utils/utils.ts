@@ -25,8 +25,9 @@ import {
     PLAYER_4_ID, PLAYER_IDS,
     WALL_ID,
 } from 'Constants';
-import {DATA, POS} from 'Interfaces';
+import {Boundaries, DATA, POS} from 'Interfaces';
 import Data from 'Core/data';
+import Unit from 'Core/unit';
 
 
 export const isNumberInRange = function(num: number, min: number, max: number): boolean {
@@ -156,4 +157,14 @@ export function canPlace(what: number, pos: POS, data: DATA): boolean {
     return isNumberInRange(pos.row, 0, Data.height-1)
         && isNumberInRange(pos.col, 0, Data.width-1)
         && !arr.includes(data[pos.row][pos.col]);
+}
+
+export function collide(u1: Unit, u2: Unit): boolean {
+    const sides1 = new Boundaries(u1);
+    const sides2 = new Boundaries(u2);
+
+    return (sides1.bottom >= sides2.top &&
+            sides1.left <= sides2.right &&
+            sides1.top <= sides2.bottom &&
+            sides1.right >= sides2.left);
 }
