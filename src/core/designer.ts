@@ -1,7 +1,7 @@
-import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT} from 'Constants';
+import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT, UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 import Data from 'Core/data';
 import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
-import {buttonHandlerArgument} from 'Interfaces';
+import {buttonHandlerArgument, ImageType} from 'Interfaces';
 import BombIcon from 'Static/icons/bomb.svg';
 import Player1Icon from 'Static/icons/player1.svg';
 import Player2Icon from 'Static/icons/player2.svg';
@@ -23,18 +23,18 @@ type IProps = {
 
 class Designer {
     public static images: {
-        player1?: HTMLImageElement,
-        player2?: HTMLImageElement,
-        enemy?: HTMLImageElement,
-        brick?: HTMLImageElement,
-        wall?: HTMLImageElement,
-        no_brick?: HTMLImageElement,
-        fire?: HTMLImageElement,
-        bomb?: HTMLImageElement,
-        bomb_add?: HTMLImageElement,
-        power_add?: HTMLImageElement,
-        speed_add?: HTMLImageElement,
-        error?: HTMLImageElement,
+        player1?: ImageType,
+        player2?: ImageType,
+        enemy?: ImageType,
+        brick?: ImageType,
+        wall?: ImageType,
+        no_brick?: ImageType,
+        fire?: ImageType,
+        bomb?: ImageType,
+        bomb_add?: ImageType,
+        power_add?: ImageType,
+        speed_add?: ImageType,
+        error?: ImageType,
     } = {};
 
     private table: HTMLTableElement;
@@ -80,9 +80,15 @@ class Designer {
             {name: 'error', icon: ErrorIcon},
         ].forEach(img => {
             const tmp_image = new Image();
-            tmp_image.onload = () => Designer.images[img.name] = tmp_image;
+            tmp_image.onload = () => {
+                const tmp_canvas = document.createElement('canvas');
+                tmp_canvas.width = UNIT_WIDTH;
+                tmp_canvas.height = UNIT_HEIGHT;
+                const tmp_ctx = tmp_canvas.getContext('2d');
+                tmp_ctx.drawImage(tmp_image, 0, 0);
+                Designer.images[img.name] = tmp_canvas;
+            };
             tmp_image.src = img.icon;
-            document.body.insertAdjacentElement('beforeend', tmp_image);
         });
     }
 

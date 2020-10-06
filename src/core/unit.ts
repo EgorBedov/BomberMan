@@ -1,11 +1,11 @@
 import Game from 'Core/game';
 import {ImageType, POINT} from 'Interfaces';
-import {UNIT_SIZE} from 'Constants';
+import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 
 
 export default class Unit {
-    protected readonly w = UNIT_SIZE;
-    protected readonly h = UNIT_SIZE;
+    protected readonly w = UNIT_WIDTH;
+    protected readonly h = UNIT_HEIGHT;
     protected posi: POINT;
     protected game: Game;
     public toRemove: boolean;

@@ -4,7 +4,7 @@ import {
     DOWN, UP, LEFT, RIGHT,
     EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
-    TEXT, UNIT_SIZE, OBSTACLES,
+    TEXT, OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH,
 } from 'Constants';
 import Bomb from 'Core/bomb';
 import Data from 'Core/data';
@@ -234,8 +234,8 @@ class Game {
 
     public buildLevel(): void {
         const map = MAPS[this.map_index];
-        this.HEIGHT = map.length * UNIT_SIZE;
-        this.WIDTH = map[0].length * UNIT_SIZE;
+        this.HEIGHT = map.length * UNIT_HEIGHT;
+        this.WIDTH = map[0].length * UNIT_WIDTH;
         this.designer.resizeCanvas(this.HEIGHT, this.WIDTH);
         this.obstacles = [];
         this.designer.clearCanvas();
@@ -243,8 +243,8 @@ class Game {
             row.forEach((id, idIndex) => {
                 if (!OBSTACLES.includes(id)) return;
                 const pos = {
-                    x: idIndex * UNIT_SIZE,
-                    y: rowIndex * UNIT_SIZE,
+                    x: idIndex * UNIT_WIDTH,
+                    y: rowIndex * UNIT_HEIGHT,
                 };
                 this.obstacles.push(new Obstacle(this, pos, id));
             })

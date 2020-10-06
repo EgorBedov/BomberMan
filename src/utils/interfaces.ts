@@ -16,4 +16,4 @@ export type POINT = {x: number, y: number};
 
 export type buttonHandlerArgument = 'maps' | 'enemies' | 'players' | 'start';
 
-export type ImageType = HTMLImageElement | null;
+export type ImageType = HTMLCanvasElement;
