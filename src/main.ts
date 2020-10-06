@@ -1,5 +1,17 @@
 import './main.scss';
-import SV from 'Core/supervisor';
+import Game from 'Core/game';
 
-const sv = new SV();
-sv.gameLoop(0);
+const game = new Game();
+
+let lastTime = 0;
+function gameLoop(timestamp: number): void {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
+    game.designer.ctx.clearRect(0, 0, game.WIDTH, game.HEIGHT);
+    game.update(deltaTime);
+    game.draw();
+
+    requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
