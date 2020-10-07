@@ -23,6 +23,7 @@ export default class Unit {
     }
 
     public draw(): void {
+        if (this.game.gameOver) return;
         if (this.image) {
             this.game.designer.ctx.drawImage(this.image, this.posi.x, this.posi.y);
         } else {

@@ -1,6 +1,4 @@
-import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT, UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
-import Data from 'Core/data';
-import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
+import {BASE_SELECTOR, TEXT, UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 import {buttonHandlerArgument, ImageType} from 'Interfaces';
 import BombIcon from 'Static/icons/bomb.svg';
 import Player1Icon from 'Static/icons/player0.svg';
@@ -39,18 +37,15 @@ class Designer {
         nuclear?: ImageType,
     } = {};
 
-    private table: HTMLTableElement;
     private props: IProps;
     private button: HTMLButtonElement;
     private playersButton: HTMLButtonElement;
     private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
     private canvas: HTMLCanvasElement;
-    private cells: any[];
-    ctx: CanvasRenderingContext2D;
+    readonly ctx: CanvasRenderingContext2D;
 
     constructor(props: IProps) {
-        this.table = null;
         this.props = props;
 
         const app = document.querySelector(BASE_SELECTOR);
@@ -66,6 +61,7 @@ class Designer {
             .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)));
 
         document.addEventListener('keyup', (ev) => {this.props.onKeyUp(ev);});
+        document.addEventListener('keydown', this.props.onKeyPress);
 
         [
             {name: 'player0', icon: Player1Icon},
@@ -107,32 +103,6 @@ class Designer {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    public initTable(): void {
-        this.table = document.querySelector('.base') as HTMLTableElement;
-        removeAllChildrenFrom(this.table);
-        this.createTableIn(this.table);
-        this.table.style.width = (Data.width*40).toString() + 'px';
-        document.body.addEventListener('keydown', this.props.onKeyPress);
-
-        const rows = this.table.querySelectorAll('tr');
-        this.cells = [];
-        for (let iii = 0; iii < rows.length; iii++) {
-            this.cells.push(rows[iii].querySelectorAll('td'));
-        }
-        // document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this));
-    }
-
-    private createTableIn(elem: HTMLTableElement): void {
-        elem.className = 'base';
-        for (let iii = 0; iii < Data.height; iii++) {
-            const newRow = document.createElement('tr');
-            for (let jjj = 0; jjj < Data.width; jjj++) {
-                newRow.appendChild(document.createElement('td'));
-            }
-            elem.appendChild(newRow);
-        }
-    }
-
     private handleButtonClick(ev: Event): void {
         const t = ev.target as HTMLButtonElement;
         t.blur();
@@ -152,18 +122,6 @@ class Designer {
         case 'maps':
             this[`${type}Button`].innerText = arg.toString();
             break;
-        }
-    }
-
-    public updateTable(): void {
-        const d = Data.data;
-        let value = 0;
-        for (let iii = 0; iii < Data.height; iii++) {
-            for (let jjj = 0; jjj < Data.width; jjj++) {
-                value = d[iii][jjj];
-                if (ENEMIES_IDS.includes(value)) value = ENEMY_ID;
-                this.cells[iii][jjj].className = `cell cell_${value}`;
-            }
         }
     }
 

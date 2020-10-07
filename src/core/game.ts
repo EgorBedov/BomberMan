@@ -1,16 +1,11 @@
 import Designer from 'Core/designer';
-import Player from 'Core/player';
 import {
-    DOWN, UP, LEFT, RIGHT,
-    MAPS, MAX_PLAYERS,
-    PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
-    TEXT, OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH, BASIC_MAP_INDEX,
+    DOWN, UP, LEFT, RIGHT, MAPS,
+    PLAYER_1_ID, PLAYER_2_ID,
+    OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH, BASIC_MAP_INDEX,
 } from 'Constants';
-import Bomb from 'Core/bomb';
 import Data from 'Core/data';
-import Enemy from 'Core/enemy';
 import {buttonHandlerArgument} from 'Interfaces';
-import Unit from 'Core/unit';
 import Obstacle from 'Core/obstacle';
 import PlayerNEW from 'Core/playerNEW';
 import Level from 'Core/level';
@@ -22,24 +17,22 @@ import Bonus from 'Core/bonus';
 
 class Game {
     designer: Designer;
-    private gameOver = true;
+    public gameOver = true;
     private multiplayer = 0;
     private withEnemies = false;
-    private enemies: Array<Enemy> = [];
-    private players: Array<Player> = [];
     private map_index: number;
-    private units: Array<Unit> = [];
+    public playersNEW: Array<PlayerNEW> = [];
+    // public enemies: Array<Enemy> = [];
     public obstacles: Array<Obstacle> = [];
     public bombs: Array<BombNEW> = [];
     public fires: Array<Fire> = [];
     public bonuses: Array<Bonus> = [];
     public level: Level;
-    public playersNEW: Array<PlayerNEW> = [];
 
     constructor() {
         this.config();
         this.initAll();
-        this.renderAll();
+        this.rerender();
     }
 
     public handleKeyUp(ev: KeyboardEvent): void {
@@ -80,28 +73,23 @@ class Game {
         case 'AltRight':
         case 'ControlRight':
         case 'Numpad0':
-            if (this.multiplayer) this.players[1].plantBomb();
+            if (this.multiplayer) this.playersNEW[1].plantBomb();
             break;
         }
 
         if (this.multiplayer && ev.code.includes('Arrow')) {
-            this.players[1].move(where);
+            this.playersNEW[1].move(where);
         } else {
-            this.players[0].move(where);
             this.playersNEW[0].move(where);
         }
     }
 
     public endGame(): void {
         this.gameOver = true;
-        this.stopEnemies();
-        this.designer.toggleButton('start', this.gameOver);
     }
 
     public start(): void {
         this.gameOver = false;
-        this.enemies.forEach(e => {e.start();});
-        this.designer.toggleButton('start', this.gameOver);
     }
 
     private config(): void {
@@ -112,35 +100,6 @@ class Game {
             onKeyUp: this.handleKeyUp.bind(this),
             onButtonClick: this.handleButtonClick.bind(this),
         });
-        Player.rerender = Bomb.rerender = this.rerender.bind(this);
-        Player.killPlayer = Bomb.killPlayer = this.killPlayer.bind(this);
-    }
-
-    private killPlayer(player_id: number): void {
-        if (this.withEnemies && !PLAYER_IDS.includes(player_id)) {
-            this.enemies.find(e => e.id === player_id).alive = false;
-        } else {
-            this.players.find((p) => p.id === player_id).alive = false;
-        }
-        let enemies_alive = 0;
-        this.enemies.forEach(e => {if (e.alive) enemies_alive++;});
-        let players_alive = 0;
-        this.players.forEach(p => {if (p.alive) players_alive++;});
-        if (this.multiplayer) {
-            if (players_alive === 1 && enemies_alive === 0) {
-                this.designer.showEndMessage('Игрок номер ' + this.players.find((p) => p.alive === true).id + ' ' + TEXT.YOU_WIN);
-                this.endGame();
-            } else if (players_alive === 0 && enemies_alive > 0) {
-                this.designer.showEndMessage('PHP wins!')
-                this.endGame();
-            }
-        } else if (players_alive === 0) {
-            this.designer.showEndMessage('Игрок номер ' + this.players.find((p) => p.id === player_id).id + ' ' + TEXT.YOU_LOST);
-            this.endGame();
-        } else if (enemies_alive === 0) {
-            this.designer.showEndMessage('Игрок номер ' + this.players.find((p) => p.alive === true).id + ' ' + TEXT.YOU_WIN);
-            this.endGame();
-        }
     }
 
     private handleButtonClick(type: buttonHandlerArgument): void {
@@ -151,7 +110,8 @@ class Game {
             } else {
                 this.endGame();
             }
-            this.renderAll();
+            this.designer.toggleButton('start', this.gameOver);
+            this.rerender();
             return;
         }
         if (!this.gameOver) return;
@@ -174,61 +134,34 @@ class Game {
         default: return;
         }
         this.initAll();
-        this.renderAll();
-    }
-
-    private renderPlayers(): void {
-        this.players.forEach(p => p.setSelf());
-    }
-
-    private renderEnemies(): void {
-        this.enemies.forEach(p => p.setSelf());
-    }
-
-    private renderAll(): void {
-        this.renderPlayers();
-        this.renderEnemies();
         this.rerender();
     }
 
     private rerender() {
-        this.designer.updateTable();
+        // this.designer.updateTable();
     }
 
-    private initAll(): void {
-        this.initPlayers();
-        this.initMap();
-    }
-
-    private initMap() {
+    private initAll() {
         this.buildLevel();
-
-        Data.setData(this.map_index);
-        this.designer.initTable();
         this.initPlayers();
     }
 
-    private initEnemies(): void {
-        this.stopEnemies();
-        this.enemies = [];
-        if (this.withEnemies) {
-            for (let iii = this.players.length; iii < MAX_PLAYERS; iii++) {
-                this.enemies.push(new Enemy(iii));
-            }
-        }
-    }
+    // private initEnemies(): void {
+    //     this.stopEnemies();
+    //     this.enemies = [];
+    //     if (this.withEnemies) {
+    //         for (let iii = this.players.length; iii < MAX_PLAYERS; iii++) {
+    //             this.enemies.push(new Enemy(iii));
+    //         }
+    //     }
+    // }
 
     private initPlayers(): void {
         this.playersNEW = [new PlayerNEW(this, 0, false)];
-        this.players = [new Player(PLAYER_1_ID)];
         if (this.multiplayer) {
-            this.players.push(new Player(PLAYER_2_ID));
+            this.playersNEW.push(new PlayerNEW(this, 1, false));
         }
-        this.initEnemies();
-    }
-
-    private stopEnemies(): void {
-        this.enemies.forEach(e => {e.stop();});
+        // this.initEnemies();
     }
 
     public update(deltaTime: number): void {
