@@ -1,7 +1,8 @@
 import Unit from 'Core/unit';
-import {DOWN, LEFT, moveHandlerArgument, RIGHT, UP} from 'Constants';
+import {BOTTOM_SIDE, DOWN, LEFT, LEFT_SIDE, moveHandlerArgument, RIGHT, RIGHT_SIDE, TOP_SIDE, UP} from 'Constants';
 import Game from 'Core/game';
 import {Boundaries, ImageType, POINT} from 'Interfaces';
+import {pointInBounds} from 'Utils/utils';
 
 
 export default class MovableUnit extends Unit {
@@ -32,7 +33,6 @@ export default class MovableUnit extends Unit {
     }
 
     public work(deltaTime: number): void {
-        const prevPos = {...this.posi};
         this.posi.x += this.speed.x / deltaTime;
         this.posi.y += this.speed.y / deltaTime;
 
@@ -41,39 +41,59 @@ export default class MovableUnit extends Unit {
         if (this.posi.y < 0) this.posi.y = 0;
         if (this.posi.y > this.game.level.HEIGHT - this.h) this.posi.y = this.game.level.HEIGHT - this.h;
 
+        const points: POINT[] = [
+            {x: this.posi.x,            y: this.posi.y,        }, // top left
+            {x: this.posi.x + this.w,   y: this.posi.y,        }, // top right
+            {x: this.posi.x,            y: this.posi.y + this.h}, // bottom left
+            {x: this.posi.x + this.w,   y: this.posi.y + this.h}, // bottom right
+        ];
+
         for (let iii = 0; iii < this.game.obstacles.length; iii++) {
-            const direction = this.collide(this.game.obstacles[iii]);
-            if (direction) {
-                switch (direction) {
-                case UP:
-                case DOWN:
-                    this.posi.y = prevPos.y;
-                    break;
-                case LEFT:
-                case RIGHT:
-                    this.posi.x = prevPos.x;
-                    break;
-                }
+            const sideOfPlayer = this.collideNEW(this.game.obstacles[iii], points);
+            switch (sideOfPlayer) {
+            case TOP_SIDE:      this.posi.y = this.game.obstacles[iii].bounds.bottom;       break;
+            case BOTTOM_SIDE:   this.posi.y = this.game.obstacles[iii].bounds.top - this.h; break;
+            case LEFT_SIDE:     this.posi.x = this.game.obstacles[iii].bounds.right;        break;
+            case RIGHT_SIDE:    this.posi.x = this.game.obstacles[iii].bounds.left - this.w;break;
             }
         }
     }
 
-    public collide(u: Unit): moveHandlerArgument | null {
-        const sides1 = new Boundaries(this, null);
-        const sides2 = new Boundaries(u, null);
-        const diffs: Array<{dir: moveHandlerArgument, diff: number}> = [
-            {dir: UP, diff: sides2.bottom - sides1.top},
-            {dir: DOWN, diff: sides1.bottom - sides2.top},
-            {dir: LEFT, diff: sides2.right - sides1.left},
-            {dir: RIGHT, diff: sides1.right - sides2.left},
-        ];
+    public collideNEW(u: Unit, points: POINT[]): moveHandlerArgument | null {
+        const bounds = new Boundaries(u, null);
 
-        if (!(sides1.top <= sides2.bottom &&
-            sides1.bottom >= sides2.top &&
-            sides1.left <= sides2.right &&
-            sides1.right >= sides2.left)) return null;
+        // Check all points
+        points = points.filter(p => pointInBounds(p, bounds));
 
-        diffs.sort((a, b) => a.diff - b.diff);
-        return diffs[0].dir;
+        // No points means no connection
+        if (points.length === 0) return null;
+
+        // If one point then return the closest side
+        if (points.length === 1) {
+            const p = points[0];
+            const diffs: Array<{dir: moveHandlerArgument, diff: number}> = [
+                {dir: BOTTOM_SIDE,     diff: Math.abs(p.y - bounds.top)},
+                {dir: TOP_SIDE,  diff: Math.abs(p.y - bounds.bottom)},
+                {dir: RIGHT_SIDE,    diff: Math.abs(p.x - bounds.left)},
+                {dir: LEFT_SIDE,   diff: Math.abs(p.x - bounds.right)},
+            ];
+            diffs.sort((a, b) => a.diff - b.diff);
+            return diffs[0].dir;
+        }
+
+        // If there are two points then decide which side of player is touching the block
+        points.forEach(p => { p.x = Math.floor(p.x); p.y = Math.floor(p.y); });
+        const p1 = points[0];
+        const p2 = points[1];
+        if (p1.x === p2.x) {
+            if (p1.x === Math.floor(this.posi.x)) return LEFT_SIDE;
+            else return RIGHT_SIDE;
+        } else if (p1.y === p2.y) {
+            if (p1.y === Math.floor(this.posi.y)) return TOP_SIDE;
+            else return BOTTOM_SIDE;
+        } else {
+            console.log('no points with equal coordinates');
+            return null;
+        }
     }
 }

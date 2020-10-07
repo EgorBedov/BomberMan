@@ -121,6 +121,11 @@ export const RIGHT = 4;
 
 export const DIRECTIONS = [UP, DOWN, LEFT, RIGHT];
 
+export const TOP_SIDE = 1;
+export const BOTTOM_SIDE = 2;
+export const LEFT_SIDE = 3;
+export const RIGHT_SIDE = 4;
+
 export type moveHandlerArgument = 1 | 2 | 3 | 4;
 
 const UNIT_SIZE = 40;
