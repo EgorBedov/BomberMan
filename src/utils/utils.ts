@@ -22,10 +22,10 @@ import {
     PLAYER_1_ID,
     PLAYER_2_ID,
     PLAYER_3_ID,
-    PLAYER_4_ID, PLAYER_IDS,
+    PLAYER_4_ID, PLAYER_IDS, UNIT_HEIGHT, UNIT_WIDTH,
     WALL_ID,
 } from 'Constants';
-import {Boundaries, DATA, POS} from 'Interfaces';
+import {Boundaries, DATA, POINT, POS} from 'Interfaces';
 import Data from 'Core/data';
 import Unit from 'Core/unit';
 
@@ -160,11 +160,32 @@ export function canPlace(what: number, pos: POS, data: DATA): boolean {
 }
 
 export function collide(u1: Unit, u2: Unit): boolean {
-    const sides1 = new Boundaries(u1);
-    const sides2 = new Boundaries(u2);
+    const sides1 = new Boundaries(u1, null);
+    const sides2 = new Boundaries(u2, null);
 
     return (sides1.bottom >= sides2.top &&
             sides1.left <= sides2.right &&
             sides1.top <= sides2.bottom &&
             sides1.right >= sides2.left);
+}
+
+export function getClosestAreaStartingPoint(center: POINT): POINT {
+    // Get square which includes this center
+    let x = 0;
+    let y = 0;
+    while (x + UNIT_WIDTH < center.x) x += UNIT_WIDTH;
+    while (y + UNIT_HEIGHT < center.y) y += UNIT_HEIGHT;
+
+    return {x,y};
+}
+
+export function getCenter(pos: POINT, w = UNIT_WIDTH, h = UNIT_HEIGHT): POINT {
+    return {x: pos.x + w / 2, y: pos.y + h / 2};
+}
+
+export function pointInBounds(p: POINT, b: Boundaries): boolean {
+    return p.x >= b.left &&
+           p.x <= b.right &&
+           p.y >= b.top &&
+           p.y <= b.bottom;
 }

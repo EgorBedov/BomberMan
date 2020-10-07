@@ -1,17 +1,34 @@
 import MovableUnit from 'Core/movableUnit';
 import Game from 'Core/game';
 import Designer from 'Core/designer';
+import BombNEW from 'Core/bombNEW';
+import {getCenter, getClosestAreaStartingPoint, pointInBounds} from 'Utils/utils';
+import {Area, Boundaries} from 'Interfaces';
+import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
+
 
 export default class PlayerNEW extends MovableUnit {
+    public bombsLeft: number;
+    public power: number;
+    public nuclear: boolean;
+
     constructor(g: Game, index: number) {
-        super(g);
-        this.image = Designer.images[`player${index}`] || Designer.images.error;
-        this.posi = this.game.level.positions[index];
+        super(g, g.level.positions[index], Designer.images[`player${index}`] || Designer.images.error);
         this.w *= 0.6;
         this.h *= 0.6;
+        this.bombsLeft = 2;
+        this.nuclear = false;
+        this.power = 2;
     }
 
-    public draw(): void {
-        this.game.designer.ctx.drawImage(this.image, this.posi.x, this.posi.y);
+    public plantBomb(): void {
+        if (!this.toRemove && this.bombsLeft > 0) {
+            // Check whether this area is blocked by another bomb
+            const area: Area = {...getClosestAreaStartingPoint(getCenter(this.posi)), w: UNIT_WIDTH, h: UNIT_HEIGHT}
+            const bounds = new Boundaries(null, area);
+            if (this.game.bombs.find(b => pointInBounds(b.center, bounds))) return;
+            this.bombsLeft--;
+            this.game.bombs.push(new BombNEW(this.game, getClosestAreaStartingPoint(getCenter(this.posi)), this));
+        }
     }
 }

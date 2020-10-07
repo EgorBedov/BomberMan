@@ -17,4 +17,11 @@ export default class Level {
         this.WIDTH = this.map[0].length * UNIT_HEIGHT;
         this.HEIGHT = this.map.length * UNIT_WIDTH;
     }
+
+    public startingPointInBounds(pos: POINT): boolean {
+        return pos.x >= 0 &&
+               pos.x <= this.WIDTH - UNIT_WIDTH &&
+               pos.y >= 0 &&
+               pos.y <= this.HEIGHT - UNIT_HEIGHT;
+    }
 }

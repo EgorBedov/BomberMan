@@ -3,9 +3,11 @@ import Game from 'Core/game';
 import {POINT} from 'Interfaces';
 import Designer from 'Core/designer';
 import {BRICK_ID, NO_BLOCK_ID, WALL_ID} from 'Constants';
+import {getCenter} from 'Utils/utils';
 
 export default class Obstacle extends Unit {
-    public type_id: number;
+    public readonly type_id: number;
+    public readonly center: POINT;
 
     constructor(game: Game, pos: POINT, type_id: number) {
         let img = Designer.images.error;
@@ -22,9 +24,6 @@ export default class Obstacle extends Unit {
         }
         super(game, pos, img);
         this.type_id = type_id;
-    }
-
-    public draw(): void {
-        this.game.designer.ctx.drawImage(this.image, this.posi.x, this.posi.y);
+        this.center = getCenter(this.posi);
     }
 }

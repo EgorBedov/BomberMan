@@ -2,7 +2,7 @@ import Designer from 'Core/designer';
 import Player from 'Core/player';
 import {
     DOWN, UP, LEFT, RIGHT,
-    EMPTY_MAP_INDEX, MAPS, MAX_PLAYERS,
+    MAPS, MAX_PLAYERS,
     PLAYER_1_ID, PLAYER_2_ID, PLAYER_IDS,
     TEXT, OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH, BASIC_MAP_INDEX,
 } from 'Constants';
@@ -10,12 +10,12 @@ import Bomb from 'Core/bomb';
 import Data from 'Core/data';
 import Enemy from 'Core/enemy';
 import {buttonHandlerArgument} from 'Interfaces';
-import MovableUnit from 'Core/movableUnit';
 import Unit from 'Core/unit';
 import Obstacle from 'Core/obstacle';
 import PlayerNEW from 'Core/playerNEW';
 import Level from 'Core/level';
 import {_MAPS} from 'Core/levels';
+import TemporaryUnit from 'Core/temporaryUnit';
 
 
 class Game {
@@ -26,9 +26,11 @@ class Game {
     private enemies: Array<Enemy> = [];
     private players: Array<Player> = [];
     private map_index: number;
-    private units: Array<MovableUnit> = [];
-    public obstacles: Array<Unit> = [];
+    private units: Array<Unit> = [];
+    public obstacles: Array<Obstacle> = [];
+    public bombs: Array<TemporaryUnit> = [];
     public level: Level;
+    private playersNEW: Array<PlayerNEW> = [];
 
     constructor() {
         this.config();
@@ -46,7 +48,7 @@ class Game {
         case 'KeyD':    where = RIGHT;  break;
         case 'KeyA':    where = LEFT;   break;
         }
-        this.units[0].stop(where);
+        this.playersNEW[0].stop(where);
     }
 
     public handleKeyPress(ev: KeyboardEvent): void {
@@ -68,7 +70,7 @@ class Game {
 
         case 'Space':
         case 'MetaLeft':
-            this.players[0].plantBomb();
+            this.playersNEW[0].plantBomb();
             break;
         case 'ShiftRight':
         case 'AltRight':
@@ -82,7 +84,7 @@ class Game {
             this.players[1].move(where);
         } else {
             this.players[0].move(where);
-            this.units[0].move(where);
+            this.playersNEW[0].move(where);
         }
     }
 
@@ -213,7 +215,7 @@ class Game {
     }
 
     private initPlayers(): void {
-        this.units = [new PlayerNEW(this, 0)];
+        this.playersNEW = [new PlayerNEW(this, 0)];
         this.players = [new Player(PLAYER_1_ID)];
         if (this.multiplayer) {
             this.players.push(new Player(PLAYER_2_ID));
@@ -227,13 +229,17 @@ class Game {
 
     public update(deltaTime: number): void {
         if (this.gameOver) return;
-        this.units.forEach(u => u.work(deltaTime));
-        this.units.filter(u => !u.toRemove);
+        this.playersNEW.forEach(u => u.work(deltaTime));
+        this.bombs.forEach(b => b.work(deltaTime));
+        this.bombs = this.bombs.filter(b => !b.toRemove);
+        this.playersNEW = this.playersNEW.filter(u => !u.toRemove);
+        this.obstacles = this.obstacles.filter(u => !u.toRemove);
     }
 
     public draw(): void {
-        this.units.forEach(u => u.draw());
+        this.playersNEW.forEach(u => u.draw());
         this.obstacles.forEach(o => o.draw());
+        this.bombs.forEach(b => b.draw());
     }
 
     public buildLevel(): void {

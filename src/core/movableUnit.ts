@@ -1,18 +1,16 @@
 import Unit from 'Core/unit';
 import {DOWN, LEFT, moveHandlerArgument, RIGHT, UP} from 'Constants';
 import Game from 'Core/game';
-import {collide} from 'Utils/utils';
-import {Boundaries} from 'Interfaces';
+import {Boundaries, ImageType, POINT} from 'Interfaces';
 
 
 export default class MovableUnit extends Unit {
     private maxSpeed = 30;
     private speed: { x: number, y: number };
 
-    constructor(g: Game) {
-        super(g, null);
+    constructor(g: Game, pos: POINT | null, img: ImageType | null) {
+        super(g, pos, img);
         this.speed = { x:0, y:0 };
-        this.posi = {x: g.level.WIDTH / 2 - this.w / 2, y: g.level.HEIGHT / 2 - this.h / 2};
     }
 
     public move(where: moveHandlerArgument): void {
@@ -48,14 +46,10 @@ export default class MovableUnit extends Unit {
             if (direction) {
                 switch (direction) {
                 case UP:
-                    this.posi.y = prevPos.y;
-                    break;
                 case DOWN:
                     this.posi.y = prevPos.y;
                     break;
                 case LEFT:
-                    this.posi.x = prevPos.x;
-                    break;
                 case RIGHT:
                     this.posi.x = prevPos.x;
                     break;
@@ -65,8 +59,8 @@ export default class MovableUnit extends Unit {
     }
 
     public collide(u: Unit): moveHandlerArgument | null {
-        const sides1 = new Boundaries(this);
-        const sides2 = new Boundaries(u);
+        const sides1 = new Boundaries(this, null);
+        const sides2 = new Boundaries(u, null);
         const diffs: Array<{dir: moveHandlerArgument, diff: number}> = [
             {dir: UP, diff: sides2.bottom - sides1.top},
             {dir: DOWN, diff: sides1.bottom - sides2.top},

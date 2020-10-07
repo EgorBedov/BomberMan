@@ -1,5 +1,5 @@
 import Unit from 'Core/unit';
-import Game from 'Core/game';
+import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 
 export type POS = {
     row: number,
@@ -16,6 +16,7 @@ export type moveFunc =  (where: string) => void;
 export type DATA = any;
 
 export type POINT = {x: number, y: number};
+export type Area = POINT & { w: number, h: number };
 
 export type buttonHandlerArgument = 'maps' | 'enemies' | 'players' | 'start';
 
@@ -27,10 +28,10 @@ export class Boundaries {
     public bottom: number;
     public left: number;
 
-    constructor(u: Unit) {
-        this.top = u.posi.y;
-        this.bottom = u.posi.y + u.h;
-        this.left = u.posi.x;
-        this.right = u.posi.x + u.w;
+    constructor(u: Unit, a: Area) {
+        this.top    = u && u.posi.y         || a && a.y         || 0;
+        this.left   = u && u.posi.x         || a && a.x         || 0;
+        this.bottom = u && u.posi.y + u.h   || a && a.y + a.h   || UNIT_HEIGHT;
+        this.right  = u && u.posi.x + u.w   || a && a.x + a.w   || UNIT_WIDTH;
     }
 }
