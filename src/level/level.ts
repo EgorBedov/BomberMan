@@ -24,4 +24,8 @@ export default class Level {
                pos.y >= 0 &&
                pos.y <= this.HEIGHT - UNIT_HEIGHT;
     }
+
+    public getPosition(index: number): POINT {
+        return {x: this.positions[index].x * UNIT_WIDTH, y: this.positions[index].y * UNIT_HEIGHT};
+    }
 }

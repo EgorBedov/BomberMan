@@ -14,7 +14,7 @@ export default class Player extends MovableUnit {
     public enemy: boolean;
 
     constructor(g: Game, index: number, enemy: boolean) {
-        super(g, g.level.positions[index], Designer.images[`player${index}`] || Designer.images.error);
+        super(g, g.level.getPosition(index), Designer.images[`player${index}`] || Designer.images.error);
         this.w *= 0.6;
         this.h *= 0.6;
         this.bombsLeft = 2;

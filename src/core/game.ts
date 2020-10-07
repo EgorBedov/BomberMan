@@ -11,7 +11,6 @@ import {BASIC_MAP_NAME} from '../level/levels';
 import Fire from '../entities/fire';
 import Bomb from '../entities/bomb';
 import Bonus from '../entities/bonus';
-import Unit from 'Core/units/unit';
 
 
 class Game {
@@ -38,14 +37,17 @@ class Game {
     public handleKeyUp(ev: KeyboardEvent): void {
         if (this.gameOver) return;
 
-        let where;
+        // prettify
         switch (ev.code) {
-        case 'KeyW':    where = UP;     break;
-        case 'KeyS':    where = DOWN;   break;
-        case 'KeyD':    where = RIGHT;  break;
-        case 'KeyA':    where = LEFT;   break;
+        case 'KeyW':    this.players[0].stop(UP);     break;
+        case 'KeyS':    this.players[0].stop(DOWN);   break;
+        case 'KeyD':    this.players[0].stop(RIGHT);  break;
+        case 'KeyA':    this.players[0].stop(LEFT);   break;
+        case 'ArrowUp':     this.multiplayer && this.players[1].stop(UP);     break;
+        case 'ArrowDown':   this.multiplayer && this.players[1].stop(DOWN);   break;
+        case 'ArrowRight':  this.multiplayer && this.players[1].stop(RIGHT);  break;
+        case 'ArrowLeft':   this.multiplayer && this.players[1].stop(LEFT);   break;
         }
-        this.players[0].stop(where);
     }
 
     public handleKeyPress(ev: KeyboardEvent): void {
