@@ -1,7 +1,7 @@
 import Designer from 'Core/designer';
 import {
     DOWN, UP, LEFT, RIGHT,
-    OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH,
+    OBSTACLES, UNIT_HEIGHT, UNIT_WIDTH, TEXT,
 } from 'Constants';
 import {buttonHandlerArgument} from 'Interfaces';
 import Obstacle from '../entities/obstacle';
@@ -11,6 +11,7 @@ import {BASIC_MAP_NAME} from '../level/levels';
 import Fire from '../entities/fire';
 import Bomb from '../entities/bomb';
 import Bonus from '../entities/bonus';
+import Enemy from '../entities/enemy';
 
 
 class Game {
@@ -19,7 +20,7 @@ class Game {
     private multiplayer = 0;
     private withEnemies = false;
     public players: Array<Player> = [];
-    // public enemies: Array<Enemy> = [];
+    public enemies: Array<Enemy> = [];
     public obstacles: Array<Obstacle> = [];
     public bombs: Array<Bomb> = [];
     public fires: Array<Fire> = [];
@@ -39,14 +40,17 @@ class Game {
 
         // prettify
         switch (ev.code) {
-        case 'KeyW':    this.players[0].stop(UP);     break;
-        case 'KeyS':    this.players[0].stop(DOWN);   break;
-        case 'KeyD':    this.players[0].stop(RIGHT);  break;
-        case 'KeyA':    this.players[0].stop(LEFT);   break;
-        case 'ArrowUp':     this.multiplayer && this.players[1].stop(UP);     break;
-        case 'ArrowDown':   this.multiplayer && this.players[1].stop(DOWN);   break;
-        case 'ArrowRight':  this.multiplayer && this.players[1].stop(RIGHT);  break;
-        case 'ArrowLeft':   this.multiplayer && this.players[1].stop(LEFT);   break;
+        case 'KeyW':    this.players[0].stop(UP);     return;
+        case 'KeyS':    this.players[0].stop(DOWN);   return;
+        case 'KeyD':    this.players[0].stop(RIGHT);  return;
+        case 'KeyA':    this.players[0].stop(LEFT);   return;
+        }
+        if (!this.multiplayer || !this.players[1]) return;
+        switch (ev.code) {
+        case 'ArrowUp':     this.players[1].stop(UP);     break;
+        case 'ArrowDown':   this.players[1].stop(DOWN);   break;
+        case 'ArrowRight':  this.players[1].stop(RIGHT);  break;
+        case 'ArrowLeft':   this.players[1].stop(LEFT);   break;
         }
     }
 
@@ -75,11 +79,11 @@ class Game {
         case 'AltRight':
         case 'ControlRight':
         case 'Numpad0':
-            if (this.multiplayer) this.players[1].plantBomb();
+            if (this.multiplayer && this.players[1]) this.players[1].plantBomb();
             break;
         }
 
-        if (this.multiplayer && ev.code.includes('Arrow')) {
+        if (this.multiplayer && ev.code.includes('Arrow') && this.players[1]) {
             this.players[1].move(where);
         } else {
             this.players[0].move(where);
@@ -134,25 +138,24 @@ class Game {
 
     private initAll() {
         this.initPlayers();
+        this.initEnemies();
         this.buildLevel();
     }
 
-    // private initEnemies(): void {
-    //     this.stopEnemies();
-    //     this.enemies = [];
-    //     if (this.withEnemies) {
-    //         for (let iii = this.players.length; iii < MAX_PLAYERS; iii++) {
-    //             this.enemies.push(new Enemy(iii));
-    //         }
-    //     }
-    // }
+    private initEnemies(): void {
+        this.enemies = [];
+        if (this.withEnemies) {
+            for (let iii = this.players.length; iii < this.level.positions.length; iii++) {
+                this.enemies.push(new Enemy(this, iii));
+            }
+        }
+    }
 
     private initPlayers(): void {
-        this.players = [new Player(this, 0, false)];
+        this.players = [new Player(this, 0)];
         if (this.multiplayer) {
-            this.players.push(new Player(this, 1, false));
+            this.players.push(new Player(this, 1));
         }
-        // this.initEnemies();
     }
 
     public update(deltaTime: number): void {
@@ -160,17 +163,33 @@ class Game {
 
         this.bombs.forEach(b => b.work(deltaTime));
         this.fires.forEach(f => f.work(deltaTime));
-        this.players.forEach(u => u.work(deltaTime));
+        this.enemies.forEach(e => e.work(deltaTime));
+        this.players.forEach(p => p.work(deltaTime));
 
         this.bombs = this.bombs.filter(b => !b.toRemove);
         this.fires = this.fires.filter(f => !f.toRemove);
-        this.players = this.players.filter(u => !u.toRemove);
-        this.obstacles = this.obstacles.filter(u => !u.toRemove);
+        this.enemies = this.enemies.filter(e => !e.toRemove);
+        this.players = this.players.filter(p => !p.toRemove);
+        this.obstacles = this.obstacles.filter(o => !o.toRemove);
 
         this.bonuses.forEach(b => b.work(deltaTime));
         this.bonuses = this.bonuses.filter(b => !b.toRemove);
 
-        if (this.players.filter(p => !p.enemy).length <= 0) this.endGame();
+        if (this.multiplayer) {
+            if (this.players.length === 1 && this.enemies.length === 0) {
+                this.designer.showEndMessage('Игрок ' + this.players[0] + ' ' + TEXT.YOU_WIN);
+                this.endGame();
+            } else if (this.players.length === 0 && this.enemies.length > 0) {
+                this.designer.showEndMessage('PHP wins!')
+                this.endGame();
+            }
+        } else if (this.players.length === 0) {
+            this.designer.showEndMessage(TEXT.YOU_LOST);
+            this.endGame();
+        } else if (this.enemies.length === 0) {
+            this.designer.showEndMessage(TEXT.YOU_WIN);
+            this.endGame();
+        }
     }
 
     public draw(): void {
@@ -185,6 +204,7 @@ class Game {
         this.bombs.forEach(b => b.draw());
         this.fires.forEach(f => f.draw());
         this.bonuses.forEach(b => b.draw());
+        this.enemies.forEach(b => b.draw());
     }
 
     public buildLevel(): void {

@@ -16,6 +16,7 @@ export default class Fire extends TemporaryUnit {
         this.timer = 500;
         const bounds = new Boundaries(null, {h: UNIT_HEIGHT, w: UNIT_WIDTH, ...this.pos});
         this.game.players.forEach(p => pointInBounds({...p.pos}, bounds) && p.remove());
+        this.game.enemies.forEach(e => pointInBounds({...e.pos}, bounds) && e.remove());
     }
 
     public work(deltaTime: number): void {

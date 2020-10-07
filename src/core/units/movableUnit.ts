@@ -15,6 +15,7 @@ export default class MovableUnit extends Unit {
     }
 
     public move(where: moveHandlerArgument): void {
+        if (this.game.gameOver) return;
         switch (where) {
         case UP:        this.speed.y = -this.maxSpeed;      break;
         case DOWN:      this.speed.y = +this.maxSpeed;      break;
@@ -29,6 +30,7 @@ export default class MovableUnit extends Unit {
         case DOWN:      if (this.speed.y > 0) this.speed.y = 0;   break;
         case LEFT:      if (this.speed.x < 0) this.speed.x = 0;   break;
         case RIGHT:     if (this.speed.x > 0) this.speed.x = 0;   break;
+        default: this.speed = {x:0,y:0};
         }
     }
 

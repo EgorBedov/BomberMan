@@ -43,50 +43,11 @@ body {
   }
 }
 
-.base {
-  width: 80%;
-  display: none;
-
-  &__container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-.base td {
-  height: 40px;
-  border: 1px solid blue;
-}
-
-.cell {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-
-  &_2 { background-image: url('~Static/icons/bomb.svg'); }
-  &_3 { background: blue; }
-  &_4 { background: saddlebrown; }
-  &_5 { background-image: url('~Static/icons/fire.svg'); }
-  &_6 { background-image: url('~Static/icons/js+bomb.svg'); }
-  &_7 { background-image: url('~Static/icons/js+fire.svg'); }
-  &_8 { background: red; border: none !important; }
-  &_9 { border: none !important; }
-  &_10 { background-image: url('~Static/icons/ts+bomb.svg'); }
-  &_11 { background-image: url('~Static/icons/ts+fire.svg'); }
-  &_12 { background-image: url('~Static/icons/redux.svg'); }
-  &_13 { background-image: url('~Static/icons/bomb_add.svg'); }
-  &_14 { background-image: url('~Static/icons/fire_add.svg'); }
-  &_15 { background-image: url('~Static/icons/react.svg'); }
-  &_16 { background: saddlebrown url('~Static/icons/fire.svg') center no-repeat; }
-  &_17 { background: blue url('~Static/icons/fire.svg') center no-repeat; }
-  &_18 { background-image: url('~Static/icons/ts.svg'); }
-  &_21 { background-image: url('~Static/icons/php.svg'); }
-  &_22 { background-image: url('~Static/icons/php+fire.svg'); }
-  &_23 { background-image: url('~Static/icons/php+bomb.svg'); }
-  &_24 { background-image: url('~Static/icons/js.svg'); }
-  &_25 { background-image: url('~Static/icons/redux.svg'); }
+.canvas__container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu {

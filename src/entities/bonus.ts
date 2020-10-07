@@ -25,17 +25,21 @@ export default class Bonus extends Unit {
 
     public work(deltaTime: number): void {
         // Detect collision with player or fire
-        const player = this.game.players.find(p => boundsIntersect(new Boundaries(p, null), this.bounds));
-        if (player) {
+        const unit = this.game.players.find(p => boundsIntersect(new Boundaries(p, null), this.bounds))
+            || this.game.enemies.find(e => boundsIntersect(new Boundaries(e, null), this.bounds));
+        if (unit) {
             switch (this.type_id) {
-            case ADD_BOMB:      player.bombsLeft++;     break;
-            case ADD_POWER:     player.power++;         break;
-            case ADD_SPEED:     player.maxSpeed += 5;   break;
-            case MAKE_NUCLEAR:  player.nuclear = true;  break;
+            case ADD_BOMB:      unit.bombsLeft++;     break;
+            case ADD_POWER:     unit.power++;         break;
+            case ADD_SPEED:     unit.maxSpeed += 5;   break;
+            case MAKE_NUCLEAR:  unit.nuclear = true;  break;
             }
             this.remove();
-        } else if (this.game.fires.find(f => pointInBounds({...f.center}, this.bounds))) {
+            return;
+        }
+        if (this.game.fires.find(f => pointInBounds({...f.center}, this.bounds))) {
             this.remove();
+            return;
         }
     }
 }
