@@ -11,14 +11,16 @@ export default class PlayerNEW extends MovableUnit {
     public bombsLeft: number;
     public power: number;
     public nuclear: boolean;
+    public enemy: boolean;
 
-    constructor(g: Game, index: number) {
+    constructor(g: Game, index: number, enemy: boolean) {
         super(g, g.level.positions[index], Designer.images[`player${index}`] || Designer.images.error);
         this.w *= 0.6;
         this.h *= 0.6;
         this.bombsLeft = 2;
         this.nuclear = false;
         this.power = 2;
+        this.enemy = enemy;
     }
 
     public plantBomb(): void {

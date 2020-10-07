@@ -14,7 +14,7 @@ export default class BombNEW extends TemporaryUnit {
 
     constructor(g: Game, pos: POINT, p: PlayerNEW) {
         super(g, pos, Designer.images.bomb || Designer.images.error);
-        this.timer = 1000;
+        this.timer = 2000;
         this.power = p.power;
         this.nuclear = p.nuclear;
         this.player = p;
@@ -38,22 +38,27 @@ export default class BombNEW extends TemporaryUnit {
 
                     // Check for canvas boundaries
                     if (this.game.level.startingPointInBounds(tmp_pos)) {
-                        this.game.bombs.push(new Fire(this.game, tmp_pos));
+                        // Check for collision with blocks and walls
+                        const bounds = new Boundaries(null, {h: UNIT_HEIGHT, w: UNIT_WIDTH, ...tmp_pos});
+                        const collidedObstacle = this.game.obstacles.find(o => pointInBounds(o.center, bounds));
+                        if (collidedObstacle) {
+                            if (collidedObstacle.type_id === BRICK_ID || collidedObstacle.type_id === WALL_ID && this.nuclear) {
+                                collidedObstacle.remove();
+                                this.addFire(tmp_pos);
+                            }
+                            break;
+                        }
+                        this.addFire(tmp_pos);
                     } else {
-                        break;
-                    }
-
-                    // Check for collision with blocks and walls
-                    const bounds = new Boundaries(null, {h: UNIT_HEIGHT, w: UNIT_WIDTH, ...tmp_pos});
-                    const collidedObstacle = this.game.obstacles.find(o => pointInBounds(o.center, bounds));
-                    if (collidedObstacle) {
-                        if (collidedObstacle.type_id === BRICK_ID ||
-                            collidedObstacle.type_id === WALL_ID && this.nuclear) collidedObstacle.remove();
                         break;
                     }
                 }
             }
         }
+    }
+
+    public addFire(pos: POINT): void {
+        this.game.bombs.push(new Fire(this.game, pos));
     }
 
     public remove(): void {

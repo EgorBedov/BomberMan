@@ -23,10 +23,10 @@ export type buttonHandlerArgument = 'maps' | 'enemies' | 'players' | 'start';
 export type ImageType = HTMLCanvasElement;
 
 export class Boundaries {
-    public top: number;
-    public right: number;
-    public bottom: number;
-    public left: number;
+    public readonly top: number;
+    public readonly right: number;
+    public readonly bottom: number;
+    public readonly left: number;
 
     constructor(u: Unit, a: Area) {
         this.top    = u && u.posi.y         || a && a.y         || 0;

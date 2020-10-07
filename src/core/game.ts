@@ -30,7 +30,7 @@ class Game {
     public obstacles: Array<Obstacle> = [];
     public bombs: Array<TemporaryUnit> = [];
     public level: Level;
-    private playersNEW: Array<PlayerNEW> = [];
+    public playersNEW: Array<PlayerNEW> = [];
 
     constructor() {
         this.config();
@@ -215,7 +215,7 @@ class Game {
     }
 
     private initPlayers(): void {
-        this.playersNEW = [new PlayerNEW(this, 0)];
+        this.playersNEW = [new PlayerNEW(this, 0, false)];
         this.players = [new Player(PLAYER_1_ID)];
         if (this.multiplayer) {
             this.players.push(new Player(PLAYER_2_ID));
@@ -229,11 +229,12 @@ class Game {
 
     public update(deltaTime: number): void {
         if (this.gameOver) return;
-        this.playersNEW.forEach(u => u.work(deltaTime));
         this.bombs.forEach(b => b.work(deltaTime));
+        this.playersNEW.forEach(u => u.work(deltaTime));
         this.bombs = this.bombs.filter(b => !b.toRemove);
         this.playersNEW = this.playersNEW.filter(u => !u.toRemove);
         this.obstacles = this.obstacles.filter(u => !u.toRemove);
+        if (this.playersNEW.filter(p => !p.enemy).length <= 0) this.gameOver = true;
     }
 
     public draw(): void {

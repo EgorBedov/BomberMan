@@ -1,7 +1,7 @@
 import Game from 'Core/game';
-import {ImageType, POINT} from 'Interfaces';
+import {Boundaries, ImageType, POINT} from 'Interfaces';
 import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
-import {getCenter} from 'Utils/utils';
+import {getCenter, getClosestAreaStartingPoint} from 'Utils/utils';
 
 
 export default class Unit {
@@ -37,5 +37,9 @@ export default class Unit {
 
     public remove(): void {
         this.toRemove = true;
+    }
+
+    public blockIAmIn(): Boundaries {
+        return new Boundaries(null, {...getClosestAreaStartingPoint(this.center), w: UNIT_WIDTH, h: UNIT_HEIGHT});
     }
 }
