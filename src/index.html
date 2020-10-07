@@ -8,22 +8,22 @@
 <body>
     <div id="application">
         <div class="menu">
-            <div class="menu__item">
+            <div class="menu__item_maps">
                 <p>Номер карты</p>
-                <button class="button button_map">0</button>
+                <div class="maps"></div>
             </div>
             <div class="menu__item">
                 <p>Добавить врагов?</p>
-                <button class="button button_enemies">Нет</button>
+                <button class="button button_enemies" data-type="enemies">Нет</button>
             </div>
             <div class="menu__item">
                 <p>Количество игроков</p>
-                <button class="button button_players">1</button>
+                <button class="button button_players" data-type="players">1</button>
             </div>
-            <button class="button button_start">Начать</button>
+            <button class="button button_start" data-type="start">Начать</button>
         </div>
-        <div class="base__container">
-            <table class="base"></table>
+        <div class="canvas__container">
+            <canvas id="canvas"></canvas>
         </div>
     </div>
 </body>

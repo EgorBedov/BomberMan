@@ -1,124 +1,147 @@
-import {BASE_SELECTOR, ENEMIES_IDS, ENEMY_ID, TEXT} from 'Constants';
-import Data from 'Core/data';
-import {removeAllChildrenFrom} from 'Utils/htmlHelpers';
+import {BASE_SELECTOR, TEXT, UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
+import {BASIC_MAP_NAME, CIRCLE_MAP_NAME, EMPTY_MAP_NAME} from '../level/levels';
+import {buttonHandlerArgument, ImageType} from 'Interfaces';
 
-type IProps = {
-    onBtnClick: () => void,
-    onKeyPress: (ev: KeyboardEvent) => void,
-    onPlayersBtnClick: () => void,
-    onMapsBtnClick: () => void,
-    onEnemiesBtnClick: () => void,
-};
+import BombIcon from 'Static/icons/bomb.svg';
+import Player1Icon from 'Static/icons/player0.svg';
+import Player2Icon from 'Static/icons/player1.svg';
+import EnemyIcon from 'Static/icons/enemy.svg';
+import BrickIcon from 'Static/icons/brick.svg';
+import NoBrickIcon from 'Static/icons/no_brick.svg';
+import WallIcon from 'Static/icons/wall.svg';
+import FireIcon from 'Static/icons/fire.svg';
+import BombAddIcon from 'Static/icons/bomb_add.svg';
+import PowerAddIcon from 'Static/icons/power_add.svg';
+import SpeedAddIcon from 'Static/icons/speed_add.svg';
+import ErrorIcon from 'Static/icons/404.svg';
+import NuclearIcon from 'Static/icons/react.svg';
+import EmptyMap from 'Static/images/empty_map.png';
+import BasicMap from 'Static/images/basic_map.png';
+import CircleMap from 'Static/images/circle_map.png';
+import Game from 'Core/game';
+
 
 class Designer {
-    private table: HTMLTableElement;
-    private props: IProps;
+    public static images: {
+        player0?: ImageType,
+        player1?: ImageType,
+        enemy?: ImageType,
+        brick?: ImageType,
+        wall?: ImageType,
+        no_brick?: ImageType,
+        fire?: ImageType,
+        bomb?: ImageType,
+        bomb_add?: ImageType,
+        power_add?: ImageType,
+        speed_add?: ImageType,
+        error?: ImageType,
+        nuclear?: ImageType,
+    } = {};
+
     private button: HTMLButtonElement;
-    private playersButtons: HTMLButtonElement;
-    private mapsButton: HTMLButtonElement;
+    private playersButton: HTMLButtonElement;
+    // private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
-    private cells: any[];
+    private canvas: HTMLCanvasElement;
+    readonly ctx: CanvasRenderingContext2D;
+    public game: Game;
 
-    constructor(props: IProps) {
-        this.table = null;
-        this.props = props;
+    constructor(game: Game) {
+        this.game = game;
 
-        this.init();
-    }
-
-    public init(): void {
         const app = document.querySelector(BASE_SELECTOR);
         this.button = app.querySelector('.button_start');
-        this.button.addEventListener('click', this.handleStartButtonClick.bind(this));
-
-        this.mapsButton = app.querySelector('.button_map');
-        this.mapsButton.addEventListener('click', this.handleMapsButtonClick.bind(this));
-
-        this.playersButtons = app.querySelector('.button_players');
-        this.playersButtons.addEventListener('click', this.handlePlayersButtonClick.bind(this));
-
+        this.playersButton = app.querySelector('.button_players');
         this.enemiesButton = app.querySelector('.button_enemies');
-        this.enemiesButton.addEventListener('click', this.handleEnemiesButtonClick.bind(this))
-    }
+        this.canvas = app.querySelector('#canvas');
+        this.ctx = this.canvas.getContext('2d');
 
-    public initTable(): void {
-        this.table = document.querySelector('.base') as HTMLTableElement;
-        removeAllChildrenFrom(this.table);
-        this.createTableIn(this.table);
-        this.table.style.width = (Data.width*40).toString() + 'px';
-        document.body.addEventListener('keydown', this.props.onKeyPress);
+        // Initialize images
+        [this.button, this.playersButton, this.enemiesButton]
+            .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)));
 
-        const rows = this.table.querySelectorAll('tr');
-        this.cells = [];
-        for (let iii = 0; iii < rows.length; iii++) {
-            this.cells.push(rows[iii].querySelectorAll('td'));
-        }
-        // document.addEventListener('keydown', (ev) => ev.code === 'Enter' && this.handleStartButtonClick.call(this));
-    }
+        // Initialize maps
+        const mapsMenuItem = app.querySelector('.maps');
+        [
+            {name: EMPTY_MAP_NAME, img: EmptyMap},
+            {name: BASIC_MAP_NAME, img: BasicMap},
+            {name: CIRCLE_MAP_NAME, img: CircleMap},
+        ].forEach(level => {
+            const element = document.createElement('img') as HTMLImageElement;
+            element.className = 'maps__item';
+            element.setAttribute('data-name', level.name);
+            element.onload = () => {
+                mapsMenuItem.insertAdjacentElement('beforeend', element)
+                    .addEventListener('click', (ev) => {
+                        document.body.querySelectorAll('.maps__item').forEach(mItem => mItem.classList.remove('active'));
+                        this.game.handleImageClick(ev.target as HTMLImageElement);
+                    });
+            };
+            element.src = level.img;
+        });
 
-    private createTableIn(elem: HTMLTableElement): void {
-        elem.className = 'base';
-        for (let iii = 0; iii < Data.height; iii++) {
-            const newRow = document.createElement('tr');
-            for (let jjj = 0; jjj < Data.width; jjj++) {
-                newRow.appendChild(document.createElement('td'));
+        document.addEventListener('keyup', (ev) => { this.game.handleKeyUp(ev); });
+        document.addEventListener('keydown', (ev) => { this.game.handleKeyPress(ev); });
+
+        [
+            {name: 'player0', icon: Player1Icon},
+            {name: 'player1', icon: Player2Icon},
+            {name: 'enemy', icon: EnemyIcon},
+            {name: 'brick', icon: BrickIcon},
+            {name: 'wall', icon: WallIcon},
+            {name: 'no_brick', icon: NoBrickIcon},
+            {name: 'fire', icon: FireIcon},
+            {name: 'bomb', icon: BombIcon},
+            {name: 'bomb_add', icon: BombAddIcon},
+            {name: 'power_add', icon: PowerAddIcon},
+            {name: 'speed_add', icon: SpeedAddIcon},
+            {name: 'error', icon: ErrorIcon},
+            {name: 'nuclear', icon: NuclearIcon},
+        ].forEach(img => {
+            const tmp_image = new Image();
+            const tmp_canvas = document.createElement('canvas');
+            tmp_canvas.width = UNIT_WIDTH;
+            tmp_canvas.height = UNIT_HEIGHT;
+            if (img.name.match(/^((player)|(enemy))/g)) {
+                tmp_canvas.width *= 0.6;
+                tmp_canvas.height *= 0.6;
             }
-            elem.appendChild(newRow);
-        }
+            Designer.images[img.name] = tmp_canvas;
+            tmp_image.onload = () => {
+                Designer.images[img.name].getContext('2d').drawImage(tmp_image, 0, 0);
+            };
+            tmp_image.src = img.icon;
+        });
     }
 
-    private static createButton(): HTMLElement {
-        const elem = document.createElement('button');
-        elem.className = 'button';
-        return elem;
+    public resizeCanvas(height: number, width: number): void {
+        this.canvas.height = height;
+        this.canvas.width = width;
     }
 
-    private handleEnemiesButtonClick(): void {
-        this.mapsButton.blur();
-        this.props.onEnemiesBtnClick();
+    public clearCanvas(): void {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    private handleMapsButtonClick(): void {
-        this.mapsButton.blur();
-        this.props.onMapsBtnClick();
+    private handleButtonClick(ev: Event): void {
+        const t = ev.target as HTMLButtonElement;
+        t.blur();
+        this.game.handleButtonClick(t.getAttribute('data-type') as buttonHandlerArgument);
     }
 
-    public toggleMapsButtonStyle(id: number) : void {
-        this.mapsButton.innerText = id.toString();
-    }
-
-    private handleStartButtonClick(): void {
-        this.button.blur();
-        this.props.onBtnClick();
-    }
-
-    private handlePlayersButtonClick(): void {
-        this.playersButtons.blur();
-        this.props.onPlayersBtnClick();
-    }
-
-    public toggleEnemiesButtonStyle(withEnemies: boolean) : void {
-        this.enemiesButton.innerText = withEnemies ? 'Да' : 'Нет';
-    }
-
-    public togglePlayersButtonStyle() : void {
-        this.playersButtons.innerText = this.playersButtons.innerText === '1' ? '2' : '1';
-    }
-
-    public toggleStartButtonStyle(gameOver: boolean): void {
-        this.button.innerText = gameOver ? TEXT.BEGIN : TEXT.END;
-        this.button.classList.toggle('button_start', gameOver);
-    }
-
-    public updateCanvas(): void {
-        const d = Data.data;
-        let value = 0;
-        for (let iii = 0; iii < Data.height; iii++) {
-            for (let jjj = 0; jjj < Data.width; jjj++) {
-                value = d[iii][jjj];
-                if (ENEMIES_IDS.includes(value)) value = ENEMY_ID;
-                this.cells[iii][jjj].className = `cell cell_${value}`;
-            }
+    public toggleButton(type: buttonHandlerArgument, arg: any): void {
+        switch (type) {
+        case 'start':
+            this.button.innerText = arg ? TEXT.BEGIN : TEXT.END;
+            this.button.classList.toggle('button_start', arg);
+            break;
+        case 'enemies':
+            this.enemiesButton.innerText = arg ? 'Да' : 'Нет';
+            break;
+        case 'players':
+        case 'maps':
+            this[`${type}Button`].innerText = arg.toString();
+            break;
         }
     }
 

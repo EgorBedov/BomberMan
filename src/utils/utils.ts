@@ -1,126 +1,15 @@
 import {
     ADD_BOMB,
     ADD_POWER, ADD_SPEED,
-    BASIC_MAP_INDEX,
-    BOMB_ID,
-    BOMB_ID_2, BOMB_ON_ENEMY_ID,
-    BOMB_ON_PLAYER_1_ID,
-    BOMB_ON_PLAYER_2_ID,
-    BRICK_ID,
-    CIRCLE_MAP_INDEX,
-    EMPTY_MAP_INDEX, ENEMIES_IDS,
-    ENEMY_ID,
-    FIRE_ID,
-    FIRE_ON_BRICK_ID,
-    FIRE_ON_ENEMY_ID,
-    FIRE_ON_PLAYER_1_ID,
-    FIRE_ON_PLAYER_2_ID,
-    FIRE_ON_WALL_ID,
-    LAVA_ID,
     MAKE_NUCLEAR,
-    NO_BLOCK_ID,
-    PLAYER_1_ID,
-    PLAYER_2_ID,
-    PLAYER_3_ID,
-    PLAYER_4_ID, PLAYER_IDS,
-    WALL_ID,
+    UNIT_HEIGHT, UNIT_WIDTH,
 } from 'Constants';
-import {DATA, POS} from 'Interfaces';
-import Data from 'Core/data';
+import {Boundaries, POINT} from 'Interfaces';
+import Unit from 'Core/units/unit';
 
 
 export const isNumberInRange = function(num: number, min: number, max: number): boolean {
     return num >= min && num <= max;
-}
-
-export const getBombOnPLayerIdByPlayerId = function(player_id: number): number {
-    switch (true) {
-    case player_id === PLAYER_1_ID: return BOMB_ON_PLAYER_1_ID;
-    case player_id === PLAYER_2_ID: return BOMB_ON_PLAYER_2_ID;
-    case ENEMIES_IDS.includes(player_id):
-    case player_id === ENEMY_ID: return BOMB_ON_ENEMY_ID;
-    default: return BOMB_ID;
-    }
-}
-
-export const getFireOnPlayerIdByPlayerId = function(player_id: number): number {
-    switch (true) {
-    case player_id === PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
-    case player_id === PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
-    case ENEMIES_IDS.includes(player_id):
-    case player_id === ENEMY_ID: return FIRE_ON_ENEMY_ID;
-    default: return 0;
-    }
-}
-
-export const getFireOnPlayerIdBy = function(id: number): number {
-    switch (true) {
-    case id === BOMB_ON_PLAYER_1_ID: return FIRE_ON_PLAYER_1_ID;
-    case id === BOMB_ON_PLAYER_2_ID: return FIRE_ON_PLAYER_2_ID;
-    case ENEMIES_IDS.includes(id):
-    case id === BOMB_ON_ENEMY_ID: return FIRE_ON_ENEMY_ID;
-    default: return getFireOnPlayerIdByPlayerId(id);
-    }
-}
-
-export const getInitPosByPlayerId = function(player_id: number): POS {
-    switch (Data.map_id) {
-    case EMPTY_MAP_INDEX:
-    case BASIC_MAP_INDEX:
-        switch (player_id) {
-        case PLAYER_1_ID: return {row: 0, col: 0};
-        case PLAYER_2_ID: return {row: 0, col: Data.width-1};
-        case PLAYER_3_ID: return {row: Data.height-1, col: 0};
-        case PLAYER_4_ID: return {row: Data.height-1, col: Data.width-1};
-        }
-        break;
-    case CIRCLE_MAP_INDEX:
-        switch (player_id) {
-        case PLAYER_1_ID: return {row: 3, col: 3};
-        case PLAYER_2_ID: return {row: 3, col: Data.width-1-3};
-        case PLAYER_3_ID: return {row: Data.height-1-3, col: 3};
-        case PLAYER_4_ID: return {row: Data.height-1-3, col: Data.width-1-3};
-        }
-        break;
-    default: return {row: 0, col: 0};
-    }
-}
-
-export const getInitEnemyPosBy = function(index: number): POS {
-    switch (Data.map_id) {
-    case EMPTY_MAP_INDEX:
-    case BASIC_MAP_INDEX:
-        switch (index) {
-        // case 0: return {row: 0, col: 0};
-        case 1: return {row: 0, col: Data.width-1};
-        case 2: return {row: Data.height-1, col: 0};
-        case 3: return {row: Data.height-1, col: Data.width-1};
-        }
-        break;
-    case CIRCLE_MAP_INDEX:
-        switch (index) {
-        // case 0: return {row: 3, col: 3};
-        case 1: return {row: 3, col: Data.width-1-3};
-        case 2: return {row: Data.height-1-3, col: 3};
-        case 3: return {row: Data.height-1-3, col: Data.width-1-3};
-        }
-        break;
-    default: return {row: 0, col: 0};
-    }
-}
-
-export function getPlayerId(id: number): number {
-    switch (id) {
-    case PLAYER_1_ID:
-    case BOMB_ON_PLAYER_1_ID:
-    case FIRE_ON_PLAYER_1_ID: return PLAYER_1_ID;
-    case PLAYER_2_ID:
-    case BOMB_ON_PLAYER_2_ID:
-    case FIRE_ON_PLAYER_2_ID: return PLAYER_2_ID;
-    case BOMB_ON_ENEMY_ID:
-    case FIRE_ON_ENEMY_ID:
-    default: return id;
-    }
 }
 
 export function getBonus(): number {
@@ -140,20 +29,46 @@ export function getRandomInt(max: number): number {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-export function canPlace(what: number, pos: POS, data: DATA): boolean {
-    let arr: Array<number>;
-    switch (true) {
-    case what === ENEMY_ID:
-    case ENEMIES_IDS.includes(what):
-    case PLAYER_IDS.includes(what):
-        arr = [...ENEMIES_IDS, NO_BLOCK_ID, ...PLAYER_IDS, BOMB_ON_ENEMY_ID, BOMB_ON_PLAYER_1_ID, BOMB_ON_PLAYER_2_ID, WALL_ID, BRICK_ID, LAVA_ID, BOMB_ID, BOMB_ID_2, FIRE_ON_WALL_ID, FIRE_ON_BRICK_ID];
-        if (ENEMIES_IDS.includes(what)) arr.push(FIRE_ID);
-        break;
-    case what === FIRE_ID:   arr = [NO_BLOCK_ID, WALL_ID, LAVA_ID]; break;
-    case what === MAKE_NUCLEAR:   arr = [NO_BLOCK_ID, LAVA_ID]; break;
-    }
+export function collide(u1: Unit, u2: Unit): boolean {
+    const sides1 = new Boundaries(u1, null);
+    const sides2 = new Boundaries(u2, null);
 
-    return isNumberInRange(pos.row, 0, Data.height-1)
-        && isNumberInRange(pos.col, 0, Data.width-1)
-        && !arr.includes(data[pos.row][pos.col]);
+    return (sides1.bottom >= sides2.top &&
+            sides1.left <= sides2.right &&
+            sides1.top <= sides2.bottom &&
+            sides1.right >= sides2.left);
+}
+
+export function getClosestAreaStartingPoint(center: POINT): POINT {
+    // Get square which includes this center
+    let x = 0;
+    let y = 0;
+    while (x + UNIT_WIDTH < center.x) x += UNIT_WIDTH;
+    while (y + UNIT_HEIGHT < center.y) y += UNIT_HEIGHT;
+
+    return {x,y};
+}
+
+export function getCenter(pos: POINT, w = UNIT_WIDTH, h = UNIT_HEIGHT): POINT {
+    return {x: pos.x + w / 2, y: pos.y + h / 2};
+}
+
+export function pointInBounds(p: POINT, b: Boundaries): boolean {
+    return p.x >= b.left &&
+           p.x <= b.right &&
+           p.y >= b.top &&
+           p.y <= b.bottom;
+}
+
+export function boundsIntersect(b1: Boundaries, b2: Boundaries): boolean {
+    const points: POINT[] = [
+        {x: b1.left,    y: b1.top},
+        {x: b1.right,   y: b1.top},
+        {x: b1.left,    y: b1.bottom},
+        {x: b1.right,   y: b1.bottom},
+    ];
+    for (let iii = 0; iii < points.length; iii++) {
+        if (pointInBounds(points[iii], b2)) return true;
+    }
+    return false;
 }
