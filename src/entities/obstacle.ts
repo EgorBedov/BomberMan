@@ -1,4 +1,4 @@
-import Unit from 'Core/unit';
+import Unit from 'Core/units/unit';
 import Game from 'Core/game';
 import {Boundaries, POINT} from 'Interfaces';
 import Designer from 'Core/designer';
@@ -25,7 +25,7 @@ export default class Obstacle extends Unit {
         }
         super(game, pos, img);
         this.type_id = type_id;
-        this.center = getCenter(this.posi);
+        this.center = getCenter(this.pos);
         this.bounds = new Boundaries(this, null);
     }
 }

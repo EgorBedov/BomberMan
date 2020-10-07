@@ -2,7 +2,7 @@ import Game from 'Core/game';
 import {Boundaries, POINT} from 'Interfaces';
 import Designer from 'Core/designer';
 import {ADD_BOMB, ADD_POWER, ADD_SPEED, MAKE_NUCLEAR} from 'Constants';
-import Unit from 'Core/unit';
+import Unit from 'Core/units/unit';
 import {boundsIntersect, pointInBounds} from 'Utils/utils';
 
 export default class Bonus extends Unit {
@@ -25,7 +25,7 @@ export default class Bonus extends Unit {
 
     public work(deltaTime: number): void {
         // Detect collision with player or fire
-        const player = this.game.playersNEW.find(p => boundsIntersect(new Boundaries(p, null), this.bounds));
+        const player = this.game.players.find(p => boundsIntersect(new Boundaries(p, null), this.bounds));
         if (player) {
             switch (this.type_id) {
             case ADD_BOMB:      player.bombsLeft++;     break;

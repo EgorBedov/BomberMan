@@ -1,4 +1,4 @@
-import Unit from 'Core/unit';
+import Unit from 'Core/units/unit';
 import {BOTTOM_SIDE, DOWN, LEFT, LEFT_SIDE, moveHandlerArgument, RIGHT, RIGHT_SIDE, TOP_SIDE, UP} from 'Constants';
 import Game from 'Core/game';
 import {Boundaries, ImageType, POINT} from 'Interfaces';
@@ -33,28 +33,28 @@ export default class MovableUnit extends Unit {
     }
 
     public work(deltaTime: number): void {
-        this.posi.x += this.speed.x / deltaTime;
-        this.posi.y += this.speed.y / deltaTime;
+        this.pos.x += this.speed.x / deltaTime;
+        this.pos.y += this.speed.y / deltaTime;
 
-        if (this.posi.x < 0) this.posi.x = 0;
-        if (this.posi.x > this.game.level.WIDTH - this.w) this.posi.x = this.game.level.WIDTH - this.w;
-        if (this.posi.y < 0) this.posi.y = 0;
-        if (this.posi.y > this.game.level.HEIGHT - this.h) this.posi.y = this.game.level.HEIGHT - this.h;
+        if (this.pos.x < 0) this.pos.x = 0;
+        if (this.pos.x > this.game.level.WIDTH - this.w) this.pos.x = this.game.level.WIDTH - this.w;
+        if (this.pos.y < 0) this.pos.y = 0;
+        if (this.pos.y > this.game.level.HEIGHT - this.h) this.pos.y = this.game.level.HEIGHT - this.h;
 
         const points: POINT[] = [
-            {x: this.posi.x,            y: this.posi.y,        }, // top left
-            {x: this.posi.x + this.w,   y: this.posi.y,        }, // top right
-            {x: this.posi.x,            y: this.posi.y + this.h}, // bottom left
-            {x: this.posi.x + this.w,   y: this.posi.y + this.h}, // bottom right
+            {x: this.pos.x,            y: this.pos.y,        }, // top left
+            {x: this.pos.x + this.w,   y: this.pos.y,        }, // top right
+            {x: this.pos.x,            y: this.pos.y + this.h}, // bottom left
+            {x: this.pos.x + this.w,   y: this.pos.y + this.h}, // bottom right
         ];
 
         for (let iii = 0; iii < this.game.obstacles.length; iii++) {
             const sideOfPlayer = this.collideNEW(this.game.obstacles[iii], points);
             switch (sideOfPlayer) {
-            case TOP_SIDE:      this.posi.y = this.game.obstacles[iii].bounds.bottom;       break;
-            case BOTTOM_SIDE:   this.posi.y = this.game.obstacles[iii].bounds.top - this.h; break;
-            case LEFT_SIDE:     this.posi.x = this.game.obstacles[iii].bounds.right;        break;
-            case RIGHT_SIDE:    this.posi.x = this.game.obstacles[iii].bounds.left - this.w;break;
+            case TOP_SIDE:      this.pos.y = this.game.obstacles[iii].bounds.bottom;       break;
+            case BOTTOM_SIDE:   this.pos.y = this.game.obstacles[iii].bounds.top - this.h; break;
+            case LEFT_SIDE:     this.pos.x = this.game.obstacles[iii].bounds.right;        break;
+            case RIGHT_SIDE:    this.pos.x = this.game.obstacles[iii].bounds.left - this.w;break;
             }
         }
     }
@@ -86,10 +86,10 @@ export default class MovableUnit extends Unit {
         const p1 = points[0];
         const p2 = points[1];
         if (p1.x === p2.x) {
-            if (p1.x === Math.floor(this.posi.x)) return LEFT_SIDE;
+            if (p1.x === Math.floor(this.pos.x)) return LEFT_SIDE;
             else return RIGHT_SIDE;
         } else if (p1.y === p2.y) {
-            if (p1.y === Math.floor(this.posi.y)) return TOP_SIDE;
+            if (p1.y === Math.floor(this.pos.y)) return TOP_SIDE;
             else return BOTTOM_SIDE;
         } else {
             console.log('no points with equal coordinates');

@@ -1,4 +1,4 @@
-import Unit from 'Core/unit';
+import Unit from 'Core/units/unit';
 import Game from 'Core/game';
 import {ImageType, POINT} from 'Interfaces';
 

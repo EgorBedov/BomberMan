@@ -1,6 +1,6 @@
 import {DATA, POINT} from 'Interfaces';
 
-const _EMPTY_MAP : DATA = [
+const EMPTY_MAP : DATA = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
@@ -8,14 +8,14 @@ const _EMPTY_MAP : DATA = [
     [0, 0, 0, 0, 0],
 ];
 
-const _EMPTY_MAP_POSITIONS: Array<POINT> = [
+const EMPTY_MAP_POSITIONS: Array<POINT> = [
     {x:0,                       y:0},
-    {x:_EMPTY_MAP[0].length-1,     y:0},
-    {x:0,                       y:_EMPTY_MAP.length-1},
-    {x:_EMPTY_MAP[0].length-1,     y:_EMPTY_MAP.length-1},
+    {x:EMPTY_MAP[0].length-1,     y:0},
+    {x:0,                       y:EMPTY_MAP.length-1},
+    {x:EMPTY_MAP[0].length-1,     y:EMPTY_MAP.length-1},
 ];
 
-const _BASIC_MAP: DATA = [
+const BASIC_MAP: DATA = [
     [0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0],
     [0, 3, 4, 3, 4, 3, 0, 3, 4, 3, 4, 3, 0, 3, 0, 3, 0, 3, 0],
     [0, 0, 4, 4, 4, 4, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -27,14 +27,14 @@ const _BASIC_MAP: DATA = [
     [0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 4, 4, 4, 0, 0],
     [0, 3, 0, 3, 0, 3, 0, 3, 4, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0],
 ];
-const _BASIC_MAP_POSITIONS: Array<POINT> = [
+const BASIC_MAP_POSITIONS: Array<POINT> = [
     {x:0,                       y:0},
-    {x:_BASIC_MAP[0].length-1,     y:0},
-    {x:0,                       y:_BASIC_MAP.length-1},
-    {x:_BASIC_MAP[0].length-1,     y:_BASIC_MAP.length-1},
+    {x:BASIC_MAP[0].length-1,     y:0},
+    {x:0,                       y:BASIC_MAP.length-1},
+    {x:BASIC_MAP[0].length-1,     y:BASIC_MAP.length-1},
 ];
 
-const _CIRCLE_MAP: DATA = [
+const CIRCLE_MAP: DATA = [
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 0, 4, 4, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9],
     [9, 9, 9, 9, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 9, 9, 9, 9],
@@ -59,23 +59,24 @@ const _CIRCLE_MAP: DATA = [
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 0, 4, 4, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9],
 ];
 
-const _CIRCLE_MAP_POSITIONS: Array<POINT> = [
+const CIRCLE_MAP_POSITIONS: Array<POINT> = [
     {x:3,                       y:3},
-    {x:_CIRCLE_MAP[0].length-1-3,y:0},
-    {x:0,                       y:_CIRCLE_MAP.length-1-3},
-    {x:_CIRCLE_MAP[0].length-1-3,y:_CIRCLE_MAP.length-1-3},
+    {x:CIRCLE_MAP[0].length-1-3,y:0},
+    {x:0,                       y:CIRCLE_MAP.length-1-3},
+    {x:CIRCLE_MAP[0].length-1-3,y:CIRCLE_MAP.length-1-3},
 ];
 
-export const _EMPTY_MAP_NAME = 'empty';
-export const _BASIC_MAP_NAME = 'basic';
-export const _CIRCLE_MAP_NAME = 'circle';
+export const EMPTY_MAP_NAME = 'empty_map';
+export const BASIC_MAP_NAME = 'basic_map';
+export const CIRCLE_MAP_NAME = 'circle_map';
 // export const SECRET_MAP_NAME = 'secret';
-export const _MAPS = [_EMPTY_MAP_NAME, _BASIC_MAP_NAME, _CIRCLE_MAP_NAME];
+export const LEVEL_NAMES = [EMPTY_MAP_NAME, BASIC_MAP_NAME, CIRCLE_MAP_NAME/*, SECRET_MAP_NAME*/];
 
 export const LEVELS: Map<string, {scheme: DATA, positions: Array<POINT>}> = new Map([
-    [_EMPTY_MAP_NAME, {scheme: _EMPTY_MAP, positions: _EMPTY_MAP_POSITIONS}],
-    [_BASIC_MAP_NAME, {scheme: _BASIC_MAP, positions: _BASIC_MAP_POSITIONS}],
-    [_CIRCLE_MAP_NAME, {scheme: _CIRCLE_MAP, positions: _CIRCLE_MAP_POSITIONS}],
+    [EMPTY_MAP_NAME, {scheme: EMPTY_MAP, positions: EMPTY_MAP_POSITIONS}],
+    [BASIC_MAP_NAME, {scheme: BASIC_MAP, positions: BASIC_MAP_POSITIONS}],
+    [CIRCLE_MAP_NAME, {scheme: CIRCLE_MAP, positions: CIRCLE_MAP_POSITIONS}],
+    // [SECRET_MAP_NAME, {scheme: SECRET_MAP, positions: SECRET_MAP_POSITIONS}],
 ]);
 
 

@@ -1,18 +1,18 @@
 import Game from 'Core/game';
 import {Boundaries, POINT} from 'Interfaces';
 import Designer from 'Core/designer';
-import TemporaryUnit from 'Core/temporaryUnit';
-import Fire from 'Core/fire';
+import TemporaryUnit from 'Core/units/temporaryUnit';
+import Fire from './fire';
 import {BRICK_ID, UNIT_HEIGHT, UNIT_WIDTH, WALL_ID} from 'Constants';
 import {pointInBounds} from 'Utils/utils';
-import PlayerNEW from 'Core/playerNEW';
+import Player from './player';
 
-export default class BombNEW extends TemporaryUnit {
+export default class Bomb extends TemporaryUnit {
     public readonly power: number;
     public readonly nuclear: boolean;
-    private player: PlayerNEW;
+    private player: Player;
 
-    constructor(g: Game, pos: POINT, p: PlayerNEW) {
+    constructor(g: Game, pos: POINT, p: Player) {
         super(g, pos, Designer.images.bomb || Designer.images.error);
         this.timer = 2000;
         this.power = p.power;
@@ -24,11 +24,11 @@ export default class BombNEW extends TemporaryUnit {
         super.work(deltaTime);
         if (this.timer < 0) {
             this.remove();
-            this.game.fires.push(new Fire(this.game, {...this.posi}, false));
+            this.game.fires.push(new Fire(this.game, {...this.pos}, false));
 
             for (let iii = 0; iii < 4; iii++) {
                 for (let jjj = 1; jjj < this.power + 1; jjj++) {
-                    const tmp_pos = {...this.posi};
+                    const tmp_pos = {...this.pos};
                     switch (iii) {
                     case 0:     tmp_pos.y += jjj * UNIT_HEIGHT;     break;
                     case 1:     tmp_pos.y -= jjj * UNIT_HEIGHT;     break;

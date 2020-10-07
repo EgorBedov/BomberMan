@@ -1,5 +1,7 @@
 import {BASE_SELECTOR, TEXT, UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
+import {BASIC_MAP_NAME, CIRCLE_MAP_NAME, EMPTY_MAP_NAME} from '../level/levels';
 import {buttonHandlerArgument, ImageType} from 'Interfaces';
+
 import BombIcon from 'Static/icons/bomb.svg';
 import Player1Icon from 'Static/icons/player0.svg';
 import Player2Icon from 'Static/icons/player1.svg';
@@ -13,12 +15,11 @@ import PowerAddIcon from 'Static/icons/power_add.svg';
 import SpeedAddIcon from 'Static/icons/speed_add.svg';
 import ErrorIcon from 'Static/icons/404.svg';
 import NuclearIcon from 'Static/icons/react.svg';
+import EmptyMap from 'Static/images/empty_map.png';
+import BasicMap from 'Static/images/basic_map.png';
+import CircleMap from 'Static/images/circle_map.png';
+import Game from 'Core/game';
 
-type IProps = {
-    onKeyPress: (ev: KeyboardEvent) => void,
-    onKeyUp: (ev: KeyboardEvent) => void,
-    onButtonClick: (type: buttonHandlerArgument) => void,
-};
 
 class Designer {
     public static images: {
@@ -37,31 +38,50 @@ class Designer {
         nuclear?: ImageType,
     } = {};
 
-    private props: IProps;
     private button: HTMLButtonElement;
     private playersButton: HTMLButtonElement;
-    private mapsButton: HTMLButtonElement;
+    // private mapsButton: HTMLButtonElement;
     private enemiesButton: HTMLButtonElement;
     private canvas: HTMLCanvasElement;
     readonly ctx: CanvasRenderingContext2D;
+    public game: Game;
 
-    constructor(props: IProps) {
-        this.props = props;
+    constructor(game: Game) {
+        this.game = game;
 
         const app = document.querySelector(BASE_SELECTOR);
         this.button = app.querySelector('.button_start');
-        this.mapsButton = app.querySelector('.button_map');
         this.playersButton = app.querySelector('.button_players');
         this.enemiesButton = app.querySelector('.button_enemies');
         this.canvas = app.querySelector('#canvas');
         this.ctx = this.canvas.getContext('2d');
 
         // Initialize images
-        [this.button, this.mapsButton, this.playersButton, this.enemiesButton]
+        [this.button, this.playersButton, this.enemiesButton]
             .forEach(btn => btn.addEventListener('click', this.handleButtonClick.bind(this)));
 
-        document.addEventListener('keyup', (ev) => {this.props.onKeyUp(ev);});
-        document.addEventListener('keydown', this.props.onKeyPress);
+        // Initialize maps
+        const mapsMenuItem = app.querySelector('.maps');
+        [
+            {name: EMPTY_MAP_NAME, img: EmptyMap},
+            {name: BASIC_MAP_NAME, img: BasicMap},
+            {name: CIRCLE_MAP_NAME, img: CircleMap},
+        ].forEach(level => {
+            const element = document.createElement('img') as HTMLImageElement;
+            element.className = 'maps__item';
+            element.setAttribute('data-name', level.name);
+            element.onload = () => {
+                mapsMenuItem.insertAdjacentElement('beforeend', element)
+                    .addEventListener('click', (ev) => {
+                        document.body.querySelectorAll('.maps__item').forEach(mItem => mItem.classList.remove('active'));
+                        this.game.handleImageClick(ev.target as HTMLImageElement);
+                    });
+            };
+            element.src = level.img;
+        });
+
+        document.addEventListener('keyup', (ev) => { this.game.handleKeyUp(ev); });
+        document.addEventListener('keydown', (ev) => { this.game.handleKeyPress(ev); });
 
         [
             {name: 'player0', icon: Player1Icon},
@@ -106,7 +126,7 @@ class Designer {
     private handleButtonClick(ev: Event): void {
         const t = ev.target as HTMLButtonElement;
         t.blur();
-        this.props.onButtonClick(t.getAttribute('data-type') as buttonHandlerArgument);
+        this.game.handleButtonClick(t.getAttribute('data-type') as buttonHandlerArgument);
     }
 
     public toggleButton(type: buttonHandlerArgument, arg: any): void {

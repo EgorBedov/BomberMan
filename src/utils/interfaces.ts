@@ -1,14 +1,5 @@
-import Unit from 'Core/unit';
+import Unit from 'Core/units/unit';
 import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
-
-export type POS = {
-    row: number,
-    col: number,
-};
-
-export type FireArea = Array<POS>;
-
-export type moveFunc =  (where: string) => void;
 
 // type DATA_ROW = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
 // export type DATA = [Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>, Array<DATA_ROW>];
@@ -29,9 +20,9 @@ export class Boundaries {
     public readonly left: number;
 
     constructor(u: Unit, a: Area) {
-        this.top    = u && u.posi.y         || a && a.y         || 0;
-        this.left   = u && u.posi.x         || a && a.x         || 0;
-        this.bottom = u && u.posi.y + u.h   || a && a.y + a.h   || UNIT_HEIGHT;
-        this.right  = u && u.posi.x + u.w   || a && a.x + a.w   || UNIT_WIDTH;
+        this.top    = u && u.pos.y         || a && a.y         || 0;
+        this.left   = u && u.pos.x         || a && a.x         || 0;
+        this.bottom = u && u.pos.y + u.h   || a && a.y + a.h   || UNIT_HEIGHT;
+        this.right  = u && u.pos.x + u.w   || a && a.x + a.w   || UNIT_WIDTH;
     }
 }

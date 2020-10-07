@@ -8,7 +8,7 @@ export default class Unit {
     // TODO: it (removed to make player smaller)
     public /*readonly*/ w = UNIT_WIDTH;
     public /*readonly*/ h = UNIT_HEIGHT;
-    posi: POINT;
+    pos: POINT;
     protected game: Game;
     public toRemove: boolean;
     protected image: ImageType;
@@ -16,19 +16,18 @@ export default class Unit {
 
     constructor(game: Game, pos: POINT, image: ImageType = null) {
         this.game = game;
-        this.posi = pos;
+        this.pos = pos;
         this.toRemove = false;
         this.image = image;
-        this.center = getCenter(this.posi);
+        this.center = getCenter(this.pos);
     }
 
     public draw(): void {
-        if (this.game.gameOver) return;
         if (this.image) {
-            this.game.designer.ctx.drawImage(this.image, this.posi.x, this.posi.y);
+            this.game.designer.ctx.drawImage(this.image, this.pos.x, this.pos.y);
         } else {
             this.game.designer.ctx.fillStyle = '#ffffff';
-            this.game.designer.ctx.fillRect(this.posi.x, this.posi.y, this.w, this.h);
+            this.game.designer.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
         }
     }
 

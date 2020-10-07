@@ -1,13 +1,13 @@
-import MovableUnit from 'Core/movableUnit';
+import MovableUnit from 'Core/units/movableUnit';
 import Game from 'Core/game';
 import Designer from 'Core/designer';
-import BombNEW from 'Core/bombNEW';
+import Bomb from './bomb';
 import {getCenter, getClosestAreaStartingPoint, pointInBounds} from 'Utils/utils';
 import {Area, Boundaries} from 'Interfaces';
 import {UNIT_HEIGHT, UNIT_WIDTH} from 'Constants';
 
 
-export default class PlayerNEW extends MovableUnit {
+export default class Player extends MovableUnit {
     public bombsLeft: number;
     public power: number;
     public nuclear: boolean;
@@ -26,11 +26,11 @@ export default class PlayerNEW extends MovableUnit {
     public plantBomb(): void {
         if (!this.toRemove && this.bombsLeft > 0) {
             // Check whether this area is blocked by another bomb
-            const area: Area = {...getClosestAreaStartingPoint(getCenter(this.posi)), w: UNIT_WIDTH, h: UNIT_HEIGHT}
+            const area: Area = {...getClosestAreaStartingPoint(getCenter(this.pos)), w: UNIT_WIDTH, h: UNIT_HEIGHT}
             const bounds = new Boundaries(null, area);
             if (this.game.bombs.find(b => pointInBounds(b.center, bounds))) return;
             this.bombsLeft--;
-            this.game.bombs.push(new BombNEW(this.game, getClosestAreaStartingPoint(getCenter(this.posi)), this));
+            this.game.bombs.push(new Bomb(this.game, getClosestAreaStartingPoint(getCenter(this.pos)), this));
         }
     }
 }
