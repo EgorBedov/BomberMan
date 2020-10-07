@@ -5,7 +5,7 @@ import {Boundaries, ImageType, POINT} from 'Interfaces';
 
 
 export default class MovableUnit extends Unit {
-    private maxSpeed = 30;
+    maxSpeed = 30;
     private speed: { x: number, y: number };
 
     constructor(g: Game, pos: POINT | null, img: ImageType | null) {

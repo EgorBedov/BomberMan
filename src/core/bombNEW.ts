@@ -24,7 +24,7 @@ export default class BombNEW extends TemporaryUnit {
         super.work(deltaTime);
         if (this.timer < 0) {
             this.remove();
-            this.game.bombs.push(new Fire(this.game, {...this.posi}));
+            this.game.fires.push(new Fire(this.game, {...this.posi}, false));
 
             for (let iii = 0; iii < 4; iii++) {
                 for (let jjj = 1; jjj < this.power + 1; jjj++) {
@@ -44,11 +44,11 @@ export default class BombNEW extends TemporaryUnit {
                         if (collidedObstacle) {
                             if (collidedObstacle.type_id === BRICK_ID || collidedObstacle.type_id === WALL_ID && this.nuclear) {
                                 collidedObstacle.remove();
-                                this.addFire(tmp_pos);
+                                this.addFire(tmp_pos, true);
                             }
                             break;
                         }
-                        this.addFire(tmp_pos);
+                        this.addFire(tmp_pos, false);
                     } else {
                         break;
                     }
@@ -57,8 +57,8 @@ export default class BombNEW extends TemporaryUnit {
         }
     }
 
-    public addFire(pos: POINT): void {
-        this.game.bombs.push(new Fire(this.game, pos));
+    public addFire(pos: POINT, replacedObstacle: boolean): void {
+        this.game.fires.push(new Fire(this.game, pos, replacedObstacle));
     }
 
     public remove(): void {

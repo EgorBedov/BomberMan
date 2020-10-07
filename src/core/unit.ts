@@ -32,7 +32,7 @@ export default class Unit {
     }
 
     public work(deltaTime: number): void {
-        this.posi.x += 5 / deltaTime;
+        return;
     }
 
     public remove(): void {

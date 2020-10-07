@@ -14,6 +14,7 @@ import BombAddIcon from 'Static/icons/bomb_add.svg';
 import PowerAddIcon from 'Static/icons/power_add.svg';
 import SpeedAddIcon from 'Static/icons/speed_add.svg';
 import ErrorIcon from 'Static/icons/404.svg';
+import NuclearIcon from 'Static/icons/react.svg';
 
 type IProps = {
     onKeyPress: (ev: KeyboardEvent) => void,
@@ -35,6 +36,7 @@ class Designer {
         power_add?: ImageType,
         speed_add?: ImageType,
         error?: ImageType,
+        nuclear?: ImageType,
     } = {};
 
     private table: HTMLTableElement;
@@ -78,6 +80,7 @@ class Designer {
             {name: 'power_add', icon: PowerAddIcon},
             {name: 'speed_add', icon: SpeedAddIcon},
             {name: 'error', icon: ErrorIcon},
+            {name: 'nuclear', icon: NuclearIcon},
         ].forEach(img => {
             const tmp_image = new Image();
             const tmp_canvas = document.createElement('canvas');

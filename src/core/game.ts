@@ -15,7 +15,9 @@ import Obstacle from 'Core/obstacle';
 import PlayerNEW from 'Core/playerNEW';
 import Level from 'Core/level';
 import {_MAPS} from 'Core/levels';
-import TemporaryUnit from 'Core/temporaryUnit';
+import Fire from 'Core/fire';
+import BombNEW from 'Core/bombNEW';
+import Bonus from 'Core/bonus';
 
 
 class Game {
@@ -28,7 +30,9 @@ class Game {
     private map_index: number;
     private units: Array<Unit> = [];
     public obstacles: Array<Obstacle> = [];
-    public bombs: Array<TemporaryUnit> = [];
+    public bombs: Array<BombNEW> = [];
+    public fires: Array<Fire> = [];
+    public bonuses: Array<Bonus> = [];
     public level: Level;
     public playersNEW: Array<PlayerNEW> = [];
 
@@ -229,11 +233,19 @@ class Game {
 
     public update(deltaTime: number): void {
         if (this.gameOver) return;
+
         this.bombs.forEach(b => b.work(deltaTime));
+        this.fires.forEach(f => f.work(deltaTime));
         this.playersNEW.forEach(u => u.work(deltaTime));
+
         this.bombs = this.bombs.filter(b => !b.toRemove);
+        this.fires = this.fires.filter(f => !f.toRemove);
         this.playersNEW = this.playersNEW.filter(u => !u.toRemove);
         this.obstacles = this.obstacles.filter(u => !u.toRemove);
+
+        this.bonuses.forEach(b => b.work(deltaTime));
+        this.bonuses = this.bonuses.filter(b => !b.toRemove);
+
         if (this.playersNEW.filter(p => !p.enemy).length <= 0) this.gameOver = true;
     }
 
@@ -241,6 +253,8 @@ class Game {
         this.playersNEW.forEach(u => u.draw());
         this.obstacles.forEach(o => o.draw());
         this.bombs.forEach(b => b.draw());
+        this.fires.forEach(f => f.draw());
+        this.bonuses.forEach(b => b.draw());
     }
 
     public buildLevel(): void {
