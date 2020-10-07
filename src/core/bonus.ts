@@ -3,7 +3,7 @@ import {Boundaries, POINT} from 'Interfaces';
 import Designer from 'Core/designer';
 import {ADD_BOMB, ADD_POWER, ADD_SPEED, MAKE_NUCLEAR} from 'Constants';
 import Unit from 'Core/unit';
-import {pointInBounds} from 'Utils/utils';
+import {boundsIntersect, pointInBounds} from 'Utils/utils';
 
 export default class Bonus extends Unit {
     public readonly type_id: number;
@@ -25,7 +25,7 @@ export default class Bonus extends Unit {
 
     public work(deltaTime: number): void {
         // Detect collision with player or fire
-        const player = this.game.playersNEW.find(p => pointInBounds({...p.posi}, this.bounds));
+        const player = this.game.playersNEW.find(p => boundsIntersect(new Boundaries(p, null), this.bounds));
         if (player) {
             switch (this.type_id) {
             case ADD_BOMB:      player.bombsLeft++;     break;
@@ -34,7 +34,7 @@ export default class Bonus extends Unit {
             case MAKE_NUCLEAR:  player.nuclear = true;  break;
             }
             this.remove();
-        } else if (this.game.fires.find(f => pointInBounds({...f.posi}, this.bounds))) {
+        } else if (this.game.fires.find(f => pointInBounds({...f.center}, this.bounds))) {
             this.remove();
         }
     }

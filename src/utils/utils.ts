@@ -189,3 +189,16 @@ export function pointInBounds(p: POINT, b: Boundaries): boolean {
            p.y >= b.top &&
            p.y <= b.bottom;
 }
+
+export function boundsIntersect(b1: Boundaries, b2: Boundaries): boolean {
+    const points: POINT[] = [
+        {x: b1.left,    y: b1.top},
+        {x: b1.right,   y: b1.top},
+        {x: b1.left,    y: b1.bottom},
+        {x: b1.right,   y: b1.bottom},
+    ];
+    for (let iii = 0; iii < points.length; iii++) {
+        if (pointInBounds(points[iii], b2)) return true;
+    }
+    return false;
+}
