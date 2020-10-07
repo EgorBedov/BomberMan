@@ -60,10 +60,14 @@ const CIRCLE_MAP: DATA = [
 ];
 
 const CIRCLE_MAP_POSITIONS: Array<POINT> = [
-    {x:3,                       y:3},
-    {x:CIRCLE_MAP[0].length-1-3,y:0},
-    {x:0,                       y:CIRCLE_MAP.length-1-3},
-    {x:CIRCLE_MAP[0].length-1-3,y:CIRCLE_MAP.length-1-3},
+    {x:3,                           y:3},
+    {x:CIRCLE_MAP[0].length-1-3,    y:3},
+    {x:3,                           y:CIRCLE_MAP.length-1-3},
+    {x:CIRCLE_MAP[0].length-1-3,    y:CIRCLE_MAP.length-1-3},
+    {x:(CIRCLE_MAP[0].length-1)/2,  y:(CIRCLE_MAP.length-1)/2},
+    {x:(CIRCLE_MAP[0].length-1)/2+1,  y:(CIRCLE_MAP.length-1)/2},
+    {x:(CIRCLE_MAP[0].length-1)/2,  y:(CIRCLE_MAP.length-1)/2+1},
+    {x:(CIRCLE_MAP[0].length-1)/2+1,  y:(CIRCLE_MAP.length-1)/2+1},
 ];
 
 export const EMPTY_MAP_NAME = 'empty_map';
